@@ -1,6 +1,6 @@
 ﻿// Win32Project1.cpp : Defines the entry point for the application.
 //
-
+#include "stdio.h"
 #include "stdafx.h"
 #include "Win32Project1.h"
 
@@ -125,7 +125,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 #define BUTTON_ID      1001
 
+char *cuvant_out()
+{
 
+return "mama are mere";
+
+
+
+}
 
 //void functie()
 //{char szFileName[MAX_PATH];
@@ -208,8 +215,11 @@ ReleaseDC(hWnd,hdc);
 		// Parse the menu selections:
 		switch (wmId)
 		{
+		
+
 		case 5:
 			
+
 		
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
@@ -217,7 +227,13 @@ ReleaseDC(hWnd,hdc);
 			DestroyWindow(hWnd);
 			break;
 		case BUTTON_ID:
-			MessageBox(0,"Proiect realizat de \n Mihai Florea \n Sava Marius","INFORMATII",0);//functie pentru buton
+
+			
+
+
+			
+			
+			MessageBox(0,cuvant_out(),"INFORMATII",0);//functie pentru buton
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -225,6 +241,31 @@ ReleaseDC(hWnd,hdc);
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: Add any drawing code here...
+//		HPEN pen;
+//            HPEN old_pen;
+//            HBRUSH br1, br2, old_br;
+//		hdc = BeginPaint(hWnd,&ps);
+//        GetClientRect(hWnd,&rect);
+////crearea noii penite
+//        pen = CreatePen(PS_SOLID,2,RGB(0,0,255));
+////pastrarea penitei vechi
+//        old_pen=(HPEN)SelectObject(hdc,pen);
+////crearea a doua pensule noi
+//        br1=CreateSolidBrush(RGB(255,33,33));
+//        br2=CreateHatchBrush(HS_CROSS, RGB(33,255,33));
+////pastrarea pensulei vechi
+//old_br=(HBRUSH)SelectObject(hdc,br1);
+////instructiuni de desenare
+////…
+////restaurarea obiectelor anterioare
+//SelectObject(hdc,old_pen);
+//SelectObject(hdc,old_br);
+////stergerea obiectelor create
+//DeleteObject(pen);
+//DeleteObject(br1);
+//DeleteObject(br2);
+
+		// stop
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
