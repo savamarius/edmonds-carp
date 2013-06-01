@@ -1,13 +1,287 @@
 ﻿// Win32Project1.cpp : Defines the entry point for the application.
 //
-#include "stdio.h"
+#define _CRT_SECURE_NO_DEPRECATE
+//inceputul codului
+#include<conio.h>
+#include <comdef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "resource.h"
 #include "stdafx.h"
 #include "Win32Project1.h"
+#include <commdlg.h>
+#include <windows.h>
+//#include "definitions.h"
+
+INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+HINSTANCE hInst;	
+char matr_adiacenta[1000][1000],nr_matr=0;
+
+
+struct graph
+{
+ int nod;
+
+ graph *next;
+
+};
+
+graph *v;
+int nr_noduri=6;
+
+#include<string.h>
+
+
+
+//BOOL CALLBACK WndBINARDialogProc(HWND hdlg, UINT message, WPARAM wParam,
+//LPARAM lParam)
+//{
+//int bState;
+//static int ok_cancel=TRUE; //stabileste dacă s-a închis cu OK sau
+////Cancel
+//switch (message)
+//{
+//case WM_DESTROY:
+//EndDialog(hdlg,ok_cancel);
+//return TRUE;
+//case WM_COMMAND:
+//switch (LOWORD(wParam))
+//{
+//case IDOK: //S-a apăsat OK
+////Functie care citeste un întreg dintr-o casetă
+////de text
+//T1 =(int)GetDlgItemInt(hdlg,IDC_T1,&bState,true);
+//if(T1>255) T1=255;
+//if(T1<0) T1=0;
+//T2 =(int)GetDlgItemInt(hdlg,IDC_T2,&bState,true);
+//if(T2>255) T2=255;
+//if(T2<0) T2=0;
+//ok_cancel=TRUE;
+////Functia care duce la încheierea dialogului
+//EndDialog(hdlg, true);
+//break;
+//case IDCANCEL: //S-a apăsat Cancel
+//ok_cancel=FALSE;
+//EndDialog(hdlg, false);
+//break;
+//}
+//return TRUE;
+//}
+//return FALSE;
+//}
+BOOL CALLBACK WndBINARDialogProc(HWND hdlg, UINT message, WPARAM wParam,
+LPARAM lParam);
+
+void citire_nr_noduri(HWND hWnd)
+	
+{
+	int nr;
+	DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd,
+(DLGPROC)WndBINARDialogProc, NULL);
+	
+
+}
+
+void generare_rand_matr(char*szFileName,HWND hWnd)
+{
+		FILE*f=fopen(szFileName,"r+");
+		citire_nr_noduri(hWnd);
+     for (int ii=0;ii<nr_noduri;ii++)
+		  for (int j=0;j<nr_noduri;j++)
+			  { matr_adiacenta[ii][j]=rand()%2;
+	 
+	   // printf("%d   ",matr_adiacenta[i][j]);
+	 
+	 }
+
+	 fprintf(f,"%d\n",nr_noduri);
+
+	 
+     for (int ii=0;ii<nr_noduri;ii++)
+	 {   
+		 
+		 fprintf(f,"%d ",rand()%99); 
+		 
+		 for (int j=0;j<nr_noduri;j++)
+			  {fprintf(f,"%d ",matr_adiacenta[ii][j]);
+		// printf("%d ",matr_adiacenta[i][j]);
+		 }
+		 fprintf(f,"\n");
+
+	 }
+
+
+ fclose(f);
+ MessageBox(hWnd,"SUccess","Success",MB_OK);
+}
+
+
+
+void creare_matrice(char *szFileName,HWND hWnd)
+{
+	char nume[1][50];
+    // strcpy(nume[1],szFileName);
+	FILE*f;
+		f=fopen(szFileName,"r");
+
+	fscanf(f,"%d",&nr_matr);
+	int nod=0,ok;
+	v=(graph*)malloc(nr_matr*sizeof(graph));
+	while(!feof(f))
+	{   int val_nod;
+	   fscanf(f,"%d",&v[nod].nod);
+		v[nod].next=NULL;
+		graph *aux=v[nod].next;
+	for(int ii=0;ii<nr_matr;ii++)
+	{
+		  fscanf(f,"%d",&val_nod);
+		  if(val_nod==1){
+
+		  if (v[nod].next==NULL)
+		  {
+				v[nod].next=(graph*)malloc(sizeof(graph));
+				v[nod].next->nod=ii;
+				aux=v[nod].next;
+				aux->next=NULL;
+		  
+		  }
+		  else{
+		  
+		  aux->next=(graph*)malloc(sizeof(graph));
+		  aux=aux->next;
+		  aux->nod=ii;
+		  aux->next=NULL;	  
+		  
+		  }
+		  }
+	}
+
+	nod++;
+
+
+  }
+	nr_noduri=nod;
+	fclose(f);
+	MessageBox(hWnd,"SUccess","Success",MB_OK);
+}
+
+
+
+void afisare()
+{
+	for(int ii=0;ii<nr_noduri;ii++)
+	{
+				//printf("nodul %d are vecinii -> ",v[ii].nod);
+
+				graph *aux=v[ii].next;
+				while(aux)
+				{
+						//printf("%d ",aux->nod);
+						aux=aux->next;			
+				
+				}
+	//    printf("\n");
+	
+	}
+
+
+
+
+
+}
+
+
+void matrice_adiacenta()
+{
+			
+	for (int ii=0;ii<nr_noduri;ii++)
+	{
+			
+		for(int j=0;j<nr_noduri;j++)
+		{
+			graph *aux=v[ii].next;
+			int ok=0;
+			while(aux)
+			{
+					if (aux->nod==j)
+					{  // printf("%d ",1);
+					     ok=1;
+						break;
+					}
+				aux=aux->next;	
+	 	}
+
+			//if (ok==0)
+				//printf("%d ",0);
+			
+
+
+		}
+
+		//printf("\n");
+
+	}
+
+
+}
+
+// sfarsitul codului 
+
+
+
+
+
+//Procedura de fereastră a casetei de dialog
+BOOL CALLBACK WndBINARDialogProc(HWND hdlg, UINT message, WPARAM wParam,
+LPARAM lParam)
+{
+int bState;
+static int ok_cancel=TRUE; //stabileste dacă s-a închis cu OK sau
+//Cancel
+switch (message)
+{
+case WM_DESTROY:
+EndDialog(hdlg,ok_cancel);
+return TRUE;
+case WM_COMMAND:
+	switch (LOWORD(wParam))
+{
+case IDOK: //S-a apăsat OK
+//Functie care citeste un întreg dintr-o casetă
+//de text
+
+	nr_noduri=(int)GetDlgItemInt(hdlg,IDC_EDIT4,&bState,true);
+
+
+
+ok_cancel=TRUE;
+//Functia care duce la încheierea dialogului
+EndDialog(hdlg, true);
+break;
+case IDCANCEL: //S-a apăsat Cancel
+ok_cancel=FALSE;
+EndDialog(hdlg, false);
+break;
+}
+return TRUE;
+}
+return FALSE;
+}
+
+
+
+
+
+
+
+
+
+
 
 #define MAX_LOADSTRING 100
 
 // Global Variables:
-HINSTANCE hInst;								// current instance
+							// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
@@ -15,7 +289,7 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -125,14 +399,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 #define BUTTON_ID      1001
 
-char *cuvant_out()
-{
 
-return "mama are mere";
-
-
-
-}
 
 //void functie()
 //{char szFileName[MAX_PATH];
@@ -144,10 +411,33 @@ return "mama are mere";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int wmId, wmEvent;
+
+
+	////////////////////////////////
+
+	//declaratii nu toate iti trebuie
+int wmId, wmEvent,ii=0;
 	PAINTSTRUCT ps;
-	HDC hdc;
+	
+
+//////////////////////////////
+
+
+
+	
+	//PAINTSTRUCT ps;
+	char szFileName[MAX_PATH] = "";
+	HPEN bluePen; 
+	HGDIOBJ oldPen;
+	HFONT font;
+	//HDC hdc;
 	static HWND hButton;
+				HDC hdc,hdc2;
+	LPCSTR Y;
+	HICON hicon, hicon_sm;
+	HWND d1=NULL, d2=NULL, d3=NULL;
+   // HDC hDC;
+	OPENFILENAME fon;
 
 	switch (message)
 	{
@@ -167,11 +457,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 hWnd, (HMENU) 1,
                 hInst, NULL );
 
-	    hButton = CreateWindow( "button", "Adauga",
+	    hButton = CreateWindow( "button", "Crearea din fisier",
                 WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-                940, 40, 
-                70, 20,
+                870, 40, 
+                130, 20,
                 hWnd, (HMENU) 2,
+                hInst, NULL );
+
+		 hButton = CreateWindow( "button", "Crearea Random",
+                WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
+                730, 40, 
+                130, 20,
+                hWnd, (HMENU) 7,
                 hInst, NULL );
 		
 		hButton = CreateWindow( "button", "Stergere",
@@ -215,13 +512,74 @@ ReleaseDC(hWnd,hdc);
 		// Parse the menu selections:
 		switch (wmId)
 		{
-		
+		case IDOK:
+			int nr;
+			
+			
+			
+			break;
+
+
+		case 7:
+			 if (szFileName)
+			 {
+				char szFileName[MAX_PATH] = "";
+			 
+			 }
+			hdc=GetDC(hWnd);
+							ZeroMemory(&fon,sizeof(fon));
+							fon.lStructSize = sizeof(fon);
+							fon.hwndOwner = hWnd;
+							fon.lpstrFilter =TEXT("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+							fon.lpstrFile =szFileName;
+							fon.nMaxFile = MAX_PATH;
+							fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+							fon.lpstrDefExt =TEXT("txt");
+							GetOpenFileName(&fon);
+
+
+			generare_rand_matr(szFileName,hWnd);
+			creare_matrice(szFileName,hWnd);
+			break;
+
+
+		case 2:
+			////////////////
+
+
+	               if (szFileName)
+					   char szFileName[MAX_PATH] = "";
+	//
+							hdc=GetDC(hWnd);
+							ZeroMemory(&fon,sizeof(fon));
+							fon.lStructSize = sizeof(fon);
+							fon.hwndOwner = hWnd;
+							fon.lpstrFilter =TEXT("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+							fon.lpstrFile =szFileName;
+							
+	          
+					
+							fon.nMaxFile = MAX_PATH;
+							fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+							fon.lpstrDefExt =TEXT("txt");
+							GetOpenFileName(&fon);
+													
+
+
+
+			////////////////
+			creare_matrice(szFileName,hWnd);
+			char cuvant[100];
+			sprintf(cuvant,"%s %d","ana are mere",4);
+			MessageBox(hWnd,cuvant,"Success",MB_OK);
+			break;
 
 		case 5:
 			
-
-		
+			
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			
+			
 			break;
 		case 6:
 			DestroyWindow(hWnd);
@@ -233,39 +591,14 @@ ReleaseDC(hWnd,hdc);
 
 			
 			
-			MessageBox(0,cuvant_out(),"INFORMATII",0);//functie pentru buton
+			//MessageBox(0,cuvant_out(),"INFORMATII",0);//functie pentru buton
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
-//		HPEN pen;
-//            HPEN old_pen;
-//            HBRUSH br1, br2, old_br;
-//		hdc = BeginPaint(hWnd,&ps);
-//        GetClientRect(hWnd,&rect);
-////crearea noii penite
-//        pen = CreatePen(PS_SOLID,2,RGB(0,0,255));
-////pastrarea penitei vechi
-//        old_pen=(HPEN)SelectObject(hdc,pen);
-////crearea a doua pensule noi
-//        br1=CreateSolidBrush(RGB(255,33,33));
-//        br2=CreateHatchBrush(HS_CROSS, RGB(33,255,33));
-////pastrarea pensulei vechi
-//old_br=(HBRUSH)SelectObject(hdc,br1);
-////instructiuni de desenare
-////…
-////restaurarea obiectelor anterioare
-//SelectObject(hdc,old_pen);
-//SelectObject(hdc,old_br);
-////stergerea obiectelor create
-//DeleteObject(pen);
-//DeleteObject(br1);
-//DeleteObject(br2);
-
-		// stop
+		////////////////////
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
@@ -283,6 +616,8 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
 	{
+
+
 	case WM_INITDIALOG:
 		return (INT_PTR)TRUE;
 
