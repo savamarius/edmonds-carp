@@ -11,12 +11,18 @@
 #include "Win32Project1.h"
 #include <commdlg.h>
 #include <windows.h>
-
+#include<time.h>
 #include<fstream>
 #include<cstring>
 	char szFileName[MAX_PATH] = "";
 int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
+
+
+clock_t begin,end;
+int time_spent;
+
+
 
 typedef struct celula{
            int nod;
@@ -187,6 +193,7 @@ FILE*in=fopen(szFileName,"r+");
 /////////////////
 /////////////
 
+
 //functie de crearea aleatoare a matrici de vecini impreuna cu capacitatile lor
 void rand_list(HWND hdlg)
 {
@@ -206,26 +213,27 @@ void rand_list(HWND hdlg)
 							fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 							fon.lpstrDefExt =TEXT("txt");
 							GetOpenFileName(&fon);
-							MessageBox(hdlg,"1","bn",MB_OK);
+				//			MessageBox(hdlg,"1","bn",MB_OK);
 
     FILE*in=fopen(szFileName,"w");
 	fprintf(in," ");
 	int bState;
-	MessageBox(hdlg,"2","bn",MB_OK);
+	//MessageBox(hdlg,"2","bn",MB_OK);
 	int nr_noduri1=(int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
-	MessageBox(hdlg,"3","bn",MB_OK);
+	//MessageBox(hdlg,"3","bn",MB_OK);
 	  int nr_muchii=0;
 	    for(int q=1;q<=nr_noduri1;q++)
 			for(int q1=1;q1<=nr_noduri1;q1++)
 				if(q1>q)
 				{rand_cap[q][q1]=rand()%30;nr_muchii++;}
 				else rand_cap[q][q1]=0;
-				MessageBox(hdlg,"4","bn",MB_OK);
-				fprintf(in,"%d %d \n ",nr_noduri,nr_muchii);
-				MessageBox(hdlg,"5","bn",MB_OK);
+		//		MessageBox(hdlg,"4","bn",MB_OK);
+				fprintf(in,"%d %d \n ",nr_noduri1,nr_muchii);
+			//	MessageBox(hdlg,"5","bn",MB_OK);
 			for(int q=1;q<=nr_noduri1;q++)
 			   for(int q1=1;q1<=nr_noduri1;q1++)
-	                  fprintf(in,"%d %d %d \n",q,q1,rand_cap[q][q1]);
+	               if(q1>q)   
+				   fprintf(in,"%d %d %d \n",q,q1,rand_cap[q][q1]);
 			
 
 fclose(in);
@@ -276,6 +284,44 @@ for (int ii=0;ii<poz;ii++)
 }
 
 
+
+
+
+void reinitializare(char*fisier,HWND hdlg){
+
+	HDC hdc;
+		OPENFILENAME fon;
+		hdc=GetDC(hdlg);
+							ZeroMemory(&fon,sizeof(fon));
+							fon.lStructSize = sizeof(fon);
+							fon.hwndOwner = hdlg;
+							fon.lpstrFilter =TEXT("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+							fon.lpstrFile =szFileName;
+							fon.nMaxFile = MAX_PATH;
+							fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+							fon.lpstrDefExt =TEXT("txt");
+							GetOpenFileName(&fon);
+
+	FILE*f=fopen(szFileName,"w");
+	fprintf(f," ");
+	fclose(f);
+
+//	de incercat ce provoaca crashul------------
+//nod_dest=NULL,nr_noduri=NULL;
+//nod1=NULL,nod2=NULL,cap=NULL,poz=0;
+//
+// graf[1001]=NULL,v=NULL,q=NULL,aux=NULL; // graful memorat  ca vectori de liste si variabile auxiliare
+//tata[1001]=NULL,n=NULL,mm=NULL,flow=NULL; //m=nr de muchii   n= valoarea nodului tinta
+// ok=NULL,viz[1001]=NULL;
+//
+//
+
+}
+
+
+
+
+
 // sfarsitul codului
 
 //Procedurile de fereastră a casetelor de dialog
@@ -283,7 +329,7 @@ for (int ii=0;ii<poz;ii++)
 BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,
 LPARAM lParam)
 {
-int bState;
+//int bState;
 static int ok_cancel=TRUE; //stabileste dacă s-a închis cu OK sau
 //Cancel
 switch (message)
@@ -322,7 +368,7 @@ return FALSE;
 BOOL CALLBACK muchii(HWND hdlg, UINT message, WPARAM wParam,
 LPARAM lParam)
 {
-int bState;
+//int bState;
 static int ok_cancel=TRUE; //stabileste dacă s-a închis cu OK sau
 //Cancel
 switch (message)
@@ -554,6 +600,31 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //}
 
+
+
+void timp_edmonds_carp(HWND hWnd)
+{
+
+       begin=clock();
+
+			
+			Edmonds_Karp(hWnd);
+			MessageBox(hWnd,"1","check",MB_OK);
+		end=clock();
+
+		char timp=NULL;
+		timp=(char)(end-begin)/CLOCKS_PER_SEC;
+		
+		///////////////////////////////////////////////////////////////////////////////////
+		
+		MessageBox(hWnd,"2","check",MB_OK);
+		
+		//sprintf(timp,"%s",time_spent);
+		MessageBox(hWnd,"3","check",MB_OK);
+//	MessageBox(hWnd,timp,"Timp",MB_OK);
+
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 
@@ -572,14 +643,14 @@ int wmId, wmEvent,ii=0;
 	
 	//PAINTSTRUCT ps;
 
-	HPEN bluePen; 
-	HGDIOBJ oldPen;
-	HFONT font;
+	//HPEN bluePen; 
+	//HGDIOBJ oldPen;
+	//HFONT font;
 	//HDC hdc;
 	static HWND hButton;
-				HDC hdc,hdc2;
-	LPCSTR Y;
-	HICON hicon, hicon_sm;
+				HDC hdc;
+	//LPCSTR Y;
+	//HICON hicon, hicon_sm;
 	HWND d1=NULL, d2=NULL, d3=NULL;
    // HDC hDC;
 	OPENFILENAME fon;
@@ -588,7 +659,7 @@ int wmId, wmEvent,ii=0;
 	{
 		case WM_CREATE:
       
-       hButton = CreateWindow( "button", "RANDOM",
+       hButton = CreateWindow( "button", "Random",
                 WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
                 0, 160, 
                 110, 20,
@@ -653,13 +724,30 @@ ReleaseDC(hWnd,hdc);
 
 			break;
 		case 1:
-			Edmonds_Karp(hWnd);
-		
+
+
+			timp_edmonds_carp(hWnd);
+	//		begin=clock();
+
+	//		
+	//		Edmonds_Karp(hWnd);
+	//	end=clock();
+
+	//	time_spent=(double)(end-begin)/CLOCKS_PER_SEC;
+	//	
+	//	///////////////////////////////////////////////////////////////////////////////////
+	//	
+	//	
+	//	char *timp=NULL;
+	//	sprintf(timp,"%s",time_spent);
+	//	
+	//MessageBox(hWnd,timp,"Timp",MB_OK);
+
 			break;
 
 		case 9:
 			
-			
+			reinitializare(szFileName,hWnd);
 
 			MessageBox(hWnd,"Reinitializare realizata cu succes!","Succes!",MB_OK);
 
