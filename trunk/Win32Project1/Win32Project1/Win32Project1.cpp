@@ -206,25 +206,27 @@ void rand_list(HWND hdlg)
 							fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 							fon.lpstrDefExt =TEXT("txt");
 							GetOpenFileName(&fon);
+							MessageBox(hdlg,"1","bn",MB_OK);
 
-    FILE*in=fopen(szFileName,"r+");
+    FILE*in=fopen(szFileName,"w");
 	fprintf(in," ");
 	int bState;
-	int nr_noduri=(int)GetDlgItemInt(hdlg,IDC_EDIT1,&bState,true);
-	
+	MessageBox(hdlg,"2","bn",MB_OK);
+	int nr_noduri1=(int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
+	MessageBox(hdlg,"3","bn",MB_OK);
 	  int nr_muchii=0;
-	    for(int q=1;q<=nr_noduri;q++)
-			for(int q1=1;q1<=nr_noduri;q1++)
+	    for(int q=1;q<=nr_noduri1;q++)
+			for(int q1=1;q1<=nr_noduri1;q1++)
 				if(q1>q)
 				{rand_cap[q][q1]=rand()%30;nr_muchii++;}
 				else rand_cap[q][q1]=0;
-
-				fprintf(in,"%d %d\n ",rand()%nr_noduri+1,nr_muchii);
-
-			for(int q=1;q<=nr_noduri;q++)
-			   for(int q1=1;q1<=nr_noduri;q1++)
+				MessageBox(hdlg,"4","bn",MB_OK);
+				fprintf(in,"%d %d \n ",nr_noduri,nr_muchii);
+				MessageBox(hdlg,"5","bn",MB_OK);
+			for(int q=1;q<=nr_noduri1;q++)
+			   for(int q1=1;q1<=nr_noduri1;q1++)
 	                  fprintf(in,"%d %d %d \n",q,q1,rand_cap[q][q1]);
-
+			
 
 fclose(in);
 }
