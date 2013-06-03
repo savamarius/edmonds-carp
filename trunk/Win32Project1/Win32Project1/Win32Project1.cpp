@@ -46,12 +46,23 @@ HINSTANCE hInst;
 char matr_adiacenta[1000][1000],nr_matr=0;
 
 
-
+BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,
+LPARAM lParam);
 BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,
 LPARAM lParam);
 
 BOOL CALLBACK muchii(HWND hdlg, UINT message, WPARAM wParam,
 LPARAM lParam);
+
+void prand_noduri(HWND hWnd)
+	
+{
+
+	DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_NRNODURI), hWnd,
+(DLGPROC)nrnoduri, NULL);
+	
+
+}
 
 void pmuchii(HWND hWnd)
 	
@@ -123,6 +134,9 @@ void update(){
 }
           
  
+
+
+
  //functie cu citirea din fisier
 void Edmonds_Karp(HWND hdlg){
 
@@ -164,35 +178,54 @@ FILE*in=fopen(szFileName,"r+");
    fclose(in);
 }
 
+//////////////
+///////////
+/////////////
+///////////
+/////////////
+////////////
+/////////////////
+/////////////
 
 //functie de crearea aleatoare a matrici de vecini impreuna cu capacitatile lor
-void rand_list()
+void rand_list(HWND hdlg)
 {
-    FILE*in=fopen("in.txt","r+");
-	int nr_noduri;
-	printf("cate noduri doriti sa auba graful?\n");
-	scanf("%d",&nr_noduri);
-	printf("care este nodul destinatie? \n");
-	int n1,m1;
-	scanf("%d",&n1);
-	fprintf(in,"%d ",n1);
-	printf("cate muchii doriti sa aiba graful? \n Atentie nu puteti introduce o valoare mai mare decat %d \n",nr_noduri*nr_noduri);
-		scanf("%d",&m1);
-		fprintf(in,"%d\n",m1);
 
-		for (int ii=1;ii<=m1;ii++)
-		{int nod1=rand()%nr_noduri,nod2=rand()%nr_noduri,cap=rand()%50;
-				while(nod1==nod2 )
-				{nod1=rand()%nr_noduri;
-		 
-		   if (nod1==0 )
-			   nod1++;
-		    
-		    if (nod2==0)
-			   nod2++;
-				}
-			fprintf(in,"%d %d %d \n",nod1,nod2,cap);
-		}
+
+	  int rand_cap[MAX_PATH][MAX_PATH];
+	
+	  HDC hdc;
+		OPENFILENAME fon;
+		hdc=GetDC(hdlg);
+							ZeroMemory(&fon,sizeof(fon));
+							fon.lStructSize = sizeof(fon);
+							fon.hwndOwner = hdlg;
+							fon.lpstrFilter =TEXT("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+							fon.lpstrFile =szFileName;
+							fon.nMaxFile = MAX_PATH;
+							fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+							fon.lpstrDefExt =TEXT("txt");
+							GetOpenFileName(&fon);
+
+    FILE*in=fopen(szFileName,"r+");
+	fprintf(in," ");
+	int bState;
+	int nr_noduri=(int)GetDlgItemInt(hdlg,IDC_EDIT1,&bState,true);
+	
+	  int nr_muchii=0;
+	    for(int q=1;q<=nr_noduri;q++)
+			for(int q1=1;q1<=nr_noduri;q1++)
+				if(q1>q)
+				{rand_cap[q][q1]=rand()%30;nr_muchii++;}
+				else rand_cap[q][q1]=0;
+
+				fprintf(in,"%d %d\n ",rand()%nr_noduri+1,nr_muchii);
+
+			for(int q=1;q<=nr_noduri;q++)
+			   for(int q1=1;q1<=nr_noduri;q1++)
+	                  fprintf(in,"%d %d %d \n",q,q1,rand_cap[q][q1]);
+
+
 fclose(in);
 }
 
@@ -244,6 +277,44 @@ for (int ii=0;ii<poz;ii++)
 // sfarsitul codului
 
 //Procedurile de fereastră a casetelor de dialog
+
+BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,
+LPARAM lParam)
+{
+int bState;
+static int ok_cancel=TRUE; //stabileste dacă s-a închis cu OK sau
+//Cancel
+switch (message)
+{
+case WM_DESTROY:
+EndDialog(hdlg,ok_cancel);
+return TRUE;
+case WM_COMMAND:
+	switch (LOWORD(wParam))
+{
+	
+
+	case IDOK: //S-a apăsat OK
+//Functie care citeste un întreg dintr-o casetă
+//de text
+		
+		rand_list(hdlg);
+	
+		
+ok_cancel=TRUE;
+//Functia care duce la încheierea dialogului
+EndDialog(hdlg, true);
+break;
+case IDCANCEL: //S-a apăsat Cancel
+ok_cancel=FALSE;
+EndDialog(hdlg, false);
+break;
+}
+return TRUE;
+}
+return FALSE;
+}
+
 
 
 BOOL CALLBACK muchii(HWND hdlg, UINT message, WPARAM wParam,
@@ -419,12 +490,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.cbClsExtra		= 0;
 	wcex.cbWndExtra		= 0;
 	wcex.hInstance		= hInstance;
-	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WIN32PROJECT1));
+	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+12);
 	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_WIN32PROJECT1);
 	wcex.lpszClassName	= szWindowClass;
-	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ICON1));
 
 	return RegisterClassEx(&wcex);
 }
@@ -515,11 +586,11 @@ int wmId, wmEvent,ii=0;
 	{
 		case WM_CREATE:
       
-       hButton = CreateWindow( "button", "?",
+       hButton = CreateWindow( "button", "RANDOM",
                 WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-                550, 550, 
-                20, 20,
-                hWnd, (HMENU) BUTTON_ID,
+                0, 160, 
+                110, 20,
+                hWnd, (HMENU) 14,
                 hInst, NULL );
 
 	   hButton = CreateWindow( "button", "Start",
@@ -573,6 +644,12 @@ ReleaseDC(hWnd,hdc);
 		// Parse the menu selections:
 		switch (wmId)
 		{
+
+		case 14:
+
+			prand_noduri(hWnd);
+
+			break;
 		case 1:
 			Edmonds_Karp(hWnd);
 		
