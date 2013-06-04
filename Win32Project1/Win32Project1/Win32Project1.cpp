@@ -176,6 +176,7 @@ FILE*in=fopen(szFileName,"r+");
 		v->nod=x;
 		v->next=graf[y];
 		graf[y]=v;
+
         }
     ok=1;
     while (ok==1) bfs();
@@ -654,10 +655,30 @@ int wmId, wmEvent,ii=0;
 	HWND d1=NULL, d2=NULL, d3=NULL;
    // HDC hDC;
 	OPENFILENAME fon;
-
+	POINT p1;
+static POINT p2;
 	switch (message)
 	{
+		case WM_LBUTTONDOWN:
+p1.x=LOWORD(lParam);
+p1.y=HIWORD(lParam);
+hdc=GetDC(hWnd); //Obtinerea contextului grafic
+Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
+MoveToEx(hdc,p2.x,p2.y,NULL);
+LineTo(hdc,p1.x,p1.y);
+p2=p1;
+ReleaseDC(hWnd,hdc); //Eliberarea contextului grafic
+return 0;
+case WM_DESTROY:
+PostQuitMessage(0);
+return 0;
+default: return DefWindowProc(hWnd, message, wParam, lParam);
+
+
 		case WM_CREATE:
+
+
+		//	Rectangle(HDC hdc, int x1, int y1, int x2, int y2);
       
        hButton = CreateWindow( "button", "Random",
                 WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
@@ -708,7 +729,7 @@ int wmId, wmEvent,ii=0;
 
 
 	  hdc=GetDC(hWnd);
-// funcţii de desenare
+Rectangle(hdc, 200,50,240,80);
 ReleaseDC(hWnd,hdc);
 
 	case WM_COMMAND:
@@ -748,11 +769,15 @@ ReleaseDC(hWnd,hdc);
 		case 9:
 			
 			reinitializare(szFileName,hWnd);
+			hdc = BeginPaint(hWnd, &ps);
+	Rectangle(hdc, 200,20,222,60);
+		EndPaint(hWnd, &ps);
 
 			MessageBox(hWnd,"Reinitializare realizata cu succes!","Succes!",MB_OK);
 
 			break;
 
+		
 
 		case 7:
 			 if (szFileName)
@@ -838,15 +863,15 @@ ReleaseDC(hWnd,hdc);
 		}
 		break;
 	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		////////////////////
-		EndPaint(hWnd, &ps);
+		//hdc = BeginPaint(hWnd, &ps);
+	//Rectangle(hdc, 200,20,222,60);
+	//	EndPaint(hWnd, &ps);
 		break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+//	case WM_DESTROY:
+	//	PostQuitMessage(0);
+	//	break;
+	//default:
+	//	return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
 }
