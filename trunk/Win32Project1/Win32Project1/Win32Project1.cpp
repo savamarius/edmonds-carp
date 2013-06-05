@@ -541,7 +541,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.hInstance		= hInstance;
 	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+12);
+	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+2);
 	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_WIN32PROJECT1);
 	wcex.lpszClassName	= szWindowClass;
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ICON1));
@@ -660,6 +660,8 @@ static POINT p2;
 	switch (message)
 	{
 		case WM_LBUTTONDOWN:
+			p1.x=200;
+			p1.y=200;
 p1.x=LOWORD(lParam);
 p1.y=HIWORD(lParam);
 hdc=GetDC(hWnd); //Obtinerea contextului grafic
@@ -768,11 +770,15 @@ ReleaseDC(hWnd,hdc);
 
 		case 9:
 			
-			reinitializare(szFileName,hWnd);
+			//reinitializare(szFileName,hWnd);
 			hdc = BeginPaint(hWnd, &ps);
 	Rectangle(hdc, 200,20,222,60);
-		EndPaint(hWnd, &ps);
+		
 
+		for(int j=200;j<=222;j++)
+			 for (int j2=20;j2<40;j2++)
+				 SetPixel( hdc, j, j2,NULL);
+		EndPaint(hWnd, &ps);
 			MessageBox(hWnd,"Reinitializare realizata cu succes!","Succes!",MB_OK);
 
 			break;
