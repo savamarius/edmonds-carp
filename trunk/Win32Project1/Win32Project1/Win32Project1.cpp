@@ -17,8 +17,9 @@
 	char szFileName[MAX_PATH] = "";
 int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
+int mem_timp[10],cont_timp=0;
 
-
+int poz_i=220;
 clock_t begin,end;
 int time_spent;
 
@@ -320,6 +321,42 @@ void reinitializare(char*fisier,HWND hdlg){
 }
 
 
+void afisare_grafice(HWND hWnd)
+{ //HDC hdc;
+//
+//PAINTSTRUCT ps;
+//	hdc = BeginPaint(hWnd, &ps);
+//	
+//
+//	int poz_i=220;
+//	
+//	for(int j=0;j<cont_timp;j++)
+//	{
+//	
+//	//Rectangle(hdc, 200,20,1223,650);
+//	Rectangle(hdc, 220,600,poz_i+50,600-mem_timp[j]*100);
+//	for(int j1=220;j1<=600;j1++)
+//			 for (int j2=poz_i+50;j2<600-mem_timp[j];j2++)
+//				 SetPixel( hdc, j1, j2,RGB(222,0,100));
+//	poz_i+=50;
+//	
+//	}
+//		EndPaint(hWnd, &ps);
+
+
+HDC hdc; //contextul grafic
+PAINTSTRUCT ps;
+RECT rect; //Obiect dreptunghi
+hdc = BeginPaint(hWnd, &ps); //Obţinerea contextului grafic
+GetClientRect(hWnd,&rect); //Obţinerea suprafeţei de desenare
+//Scrierea unui text în fereastră
+DrawText(hdc,"Primul program",-1,&rect,DT_CENTER|DT_VCENTER);
+EndPaint(hWnd, &ps);
+
+
+}
+
+
 
 
 
@@ -566,7 +603,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    hWnd = CreateWindow(szWindowClass, "Edmonds-Karp", CS_BYTEALIGNWINDOW|CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS,
-      CW_USEDEFAULT, CW_USEDEFAULT,600, 600, NULL, NULL, hInstance, NULL);
+      CW_USEDEFAULT, CW_USEDEFAULT,1300, 700, NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
    {
@@ -610,20 +647,32 @@ void timp_edmonds_carp(HWND hWnd)
 
 			
 			Edmonds_Karp(hWnd);
-			MessageBox(hWnd,"1","check",MB_OK);
+			//MessageBox(hWnd,"1","check",MB_OK);
 		end=clock();
 
-		char timp=NULL;
-		timp=(char)(end-begin)/CLOCKS_PER_SEC;
+		char timp[10];int tmp;
+		tmp=(int)(end-begin)/CLOCKS_PER_SEC;
+		mem_timp[cont_timp]=tmp;
+		cont_timp++;
 		
+		timp[0]=sprintf(timp,"%.10f ",tmp);
 		///////////////////////////////////////////////////////////////////////////////////
 		
-		MessageBox(hWnd,"2","check",MB_OK);
+		MessageBox(hWnd,timp,"TIMP",MB_OK);
 		
 		//sprintf(timp,"%s",time_spent);
-		MessageBox(hWnd,"3","check",MB_OK);
+		//MessageBox(hWnd,"3","check",MB_OK);
 //	MessageBox(hWnd,timp,"Timp",MB_OK);
 
+
+		HDC hdc; //contextul grafic
+PAINTSTRUCT ps;
+RECT rect; //Obiect dreptunghi
+hdc = BeginPaint(hWnd, &ps); //Obţinerea contextului grafic
+GetClientRect(hWnd,&rect); //Obţinerea suprafeţei de desenare
+//Scrierea unui text în fereastră
+DrawText(hdc,"Merge",-1,&rect,DT_CENTER|DT_VCENTER);
+EndPaint(hWnd, &ps);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -659,22 +708,28 @@ int wmId, wmEvent,ii=0;
 static POINT p2;
 	switch (message)
 	{
-		case WM_LBUTTONDOWN:
-			p1.x=200;
-			p1.y=200;
-p1.x=LOWORD(lParam);
-p1.y=HIWORD(lParam);
-hdc=GetDC(hWnd); //Obtinerea contextului grafic
-Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
-MoveToEx(hdc,p2.x,p2.y,NULL);
-LineTo(hdc,p1.x,p1.y);
-p2=p1;
-ReleaseDC(hWnd,hdc); //Eliberarea contextului grafic
-return 0;
-case WM_DESTROY:
-PostQuitMessage(0);
-return 0;
-default: return DefWindowProc(hWnd, message, wParam, lParam);
+
+		//functie pentru desenarea pe suprafata de lucru a diferitelor elemente de grafica
+//		case WM_LBUTTONDOWN:
+//			
+//p1.x=LOWORD(lParam);
+//p1.y=HIWORD(lParam);
+//
+////Rectangle(hdc, 200,20,1223,650);
+//
+//if (p1.x>220 && p1.x<1200 && p1.y>30 && p1.y<620)
+//	{
+//hdc=GetDC(hWnd); //Obtinerea contextului grafic
+//Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
+//MoveToEx(hdc,p2.x,p2.y,NULL);
+//LineTo(hdc,p1.x,p1.y);
+//p2=p1;
+//ReleaseDC(hWnd,hdc); }//Eliberarea contextului grafic
+//return 0;
+//case WM_DESTROY:
+//PostQuitMessage(0);
+//return 0;
+//default: return DefWindowProc(hWnd, message, wParam, lParam);
 
 
 		case WM_CREATE:
@@ -730,9 +785,9 @@ default: return DefWindowProc(hWnd, message, wParam, lParam);
       break;
 
 
-	  hdc=GetDC(hWnd);
+	/*  hdc=GetDC(hWnd);
 Rectangle(hdc, 200,50,240,80);
-ReleaseDC(hWnd,hdc);
+ReleaseDC(hWnd,hdc);*/
 
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
@@ -743,7 +798,7 @@ ReleaseDC(hWnd,hdc);
 
 		case 14:
 
-			prand_noduri(hWnd);
+			prand_noduri(hWnd);   //functie ce creaza random nodurile si legaturile dintre ele intr-un graf orientat
 
 			break;
 		case 1:
@@ -770,16 +825,8 @@ ReleaseDC(hWnd,hdc);
 
 		case 9:
 			
-			//reinitializare(szFileName,hWnd);
-			hdc = BeginPaint(hWnd, &ps);
-	Rectangle(hdc, 200,20,222,60);
-		
-
-		for(int j=200;j<=222;j++)
-			 for (int j2=20;j2<40;j2++)
-				 SetPixel( hdc, j, j2,NULL);
-		EndPaint(hWnd, &ps);
-			MessageBox(hWnd,"Reinitializare realizata cu succes!","Succes!",MB_OK);
+			reinitializare(szFileName,hWnd);
+			
 
 			break;
 
@@ -808,43 +855,13 @@ ReleaseDC(hWnd,hdc);
 
 		case 8:
 
-			pCREARETASTATURA(hWnd);
+			pCREARETASTATURA(hWnd);//functie folosita la crearea arborelui de la tastatura
 
 
 
 			break;
 
 
-		case 2:
-			////////////////
-
-
-	               if (szFileName)
-					   char szFileName[MAX_PATH] = "";
-	//
-							hdc=GetDC(hWnd);
-							ZeroMemory(&fon,sizeof(fon));
-							fon.lStructSize = sizeof(fon);
-							fon.hwndOwner = hWnd;
-							fon.lpstrFilter =TEXT("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
-							fon.lpstrFile =szFileName;
-							
-	          
-					
-							fon.nMaxFile = MAX_PATH;
-							fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-							fon.lpstrDefExt =TEXT("txt");
-							GetOpenFileName(&fon);
-													
-
-
-
-			////////////////
-			//creare_matrice(szFileName,hWnd);
-			char cuvant[100];
-			sprintf(cuvant,"%s %d","ana are mere",4);
-			MessageBox(hWnd,cuvant,"Success",MB_OK);
-			break;
 
 		case 5:
 			
@@ -869,15 +886,15 @@ ReleaseDC(hWnd,hdc);
 		}
 		break;
 	case WM_PAINT:
-		//hdc = BeginPaint(hWnd, &ps);
-	//Rectangle(hdc, 200,20,222,60);
-	//	EndPaint(hWnd, &ps);
+	//////////////////pentru desenare
+
+
 		break;
-//	case WM_DESTROY:
-	//	PostQuitMessage(0);
-	//	break;
-	//default:
-	//	return DefWindowProc(hWnd, message, wParam, lParam);
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
 }
