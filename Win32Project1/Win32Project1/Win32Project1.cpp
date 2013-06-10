@@ -344,14 +344,14 @@ void afisare_grafice(HWND hWnd)
 //		EndPaint(hWnd, &ps);
 
 
-HDC hdc; //contextul grafic
-PAINTSTRUCT ps;
-RECT rect; //Obiect dreptunghi
-hdc = BeginPaint(hWnd, &ps); //Obţinerea contextului grafic
-GetClientRect(hWnd,&rect); //Obţinerea suprafeţei de desenare
-//Scrierea unui text în fereastră
-DrawText(hdc,"Primul program",-1,&rect,DT_CENTER|DT_VCENTER);
-EndPaint(hWnd, &ps);
+//HDC hdc; //contextul grafic
+//PAINTSTRUCT ps;
+//RECT rect; //Obiect dreptunghi
+//hdc = BeginPaint(hWnd, &ps); //Obţinerea contextului grafic
+//GetClientRect(hWnd,&rect); //Obţinerea suprafeţei de desenare
+////Scrierea unui text în fereastră
+//DrawText(hdc,"Primul program",-1,&rect,DT_CENTER|DT_VCENTER);
+//EndPaint(hWnd, &ps);
 
 
 }
@@ -664,16 +664,20 @@ void timp_edmonds_carp(HWND hWnd)
 		//MessageBox(hWnd,"3","check",MB_OK);
 //	MessageBox(hWnd,timp,"Timp",MB_OK);
 
-
-		HDC hdc; //contextul grafic
-PAINTSTRUCT ps;
-RECT rect; //Obiect dreptunghi
-hdc = BeginPaint(hWnd, &ps); //Obţinerea contextului grafic
-GetClientRect(hWnd,&rect); //Obţinerea suprafeţei de desenare
-//Scrierea unui text în fereastră
-DrawText(hdc,"Merge",-1,&rect,DT_CENTER|DT_VCENTER);
-EndPaint(hWnd, &ps);
+//
+//		HDC hdc; //contextul grafic
+//PAINTSTRUCT ps;
+//RECT rect; //Obiect dreptunghi
+//hdc = BeginPaint(hWnd, &ps); //Obţinerea contextului grafic
+//GetClientRect(hWnd,&rect); //Obţinerea suprafeţei de desenare
+////Scrierea unui text în fereastră
+//DrawText(hdc,"Merge",-1,&rect,DT_CENTER|DT_VCENTER);
+//EndPaint(hWnd, &ps);
 }
+
+
+
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -734,8 +738,14 @@ static POINT p2;
 
 		case WM_CREATE:
 
+			
 
-		//	Rectangle(HDC hdc, int x1, int y1, int x2, int y2);
+
+	
+			   
+			   
+			   
+			   //	Rectangle(HDC hdc, int x1, int y1, int x2, int y2);
       
        hButton = CreateWindow( "button", "Random",
                 WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
@@ -797,6 +807,8 @@ ReleaseDC(hWnd,hdc);*/
 		{
 
 		case 14:
+			
+	
 
 			prand_noduri(hWnd);   //functie ce creaza random nodurile si legaturile dintre ele intr-un graf orientat
 
@@ -873,7 +885,7 @@ ReleaseDC(hWnd,hdc);*/
 		case 6:
 			DestroyWindow(hWnd);
 			break;
-		case BUTTON_ID:
+		//case BUTTON_ID:
 
 			
 
@@ -887,7 +899,9 @@ ReleaseDC(hWnd,hdc);*/
 		break;
 	case WM_PAINT:
 	//////////////////pentru desenare
-
+		hdc = BeginPaint(hWnd, &ps);		//////////////////pentru desenare
+	//Rectangle(hdc, 200,20,222,60);		
+	EndPaint(hWnd, &ps);
 
 		break;
 	case WM_DESTROY:
