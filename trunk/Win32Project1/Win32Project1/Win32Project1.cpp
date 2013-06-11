@@ -17,8 +17,10 @@
 char szFileName[MAX_PATH] = "";
 int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
-int mem_timp[10],cont_timp=0;
-int poz_i=220;
+float mem_timp[5];
+int cont_timp=1;
+int poz_i=700;
+void Paint(HWND hwnd);
 clock_t begin,end;
 int time_spent;
 float tmp;
@@ -44,17 +46,16 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE hInst;	
+RECT		drawrect,wndrect;
+HDC			hDC;
+
 char matr_adiacenta[1000][1000],nr_matr=0;
 
+BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
+BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
+BOOL CALLBACK muchii(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
 
-BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,
-LPARAM lParam);
-BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,
-LPARAM lParam);
-
-BOOL CALLBACK muchii(HWND hdlg, UINT message, WPARAM wParam,
-LPARAM lParam);
-
+void Paint_Grafic(HWND hwnd);
 void prand_noduri(HWND hWnd)
 {
 	DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_NRNODURI), hWnd,(DLGPROC)nrnoduri, NULL);
@@ -138,6 +139,7 @@ void Edmonds_Karp(HWND hdlg)
 	FILE*in=fopen(szFileName,"r+");
 		//  FILE*in=fopen("in.txt","r");
  // FILE* out=fopen("out.txt","r+");
+	begin=clock();
 	int ii,x,c,y; fscanf(in,"%d%d",&n,&mm);
 	for (ii=1; ii<=mm; ++ii) 
 	{
@@ -154,6 +156,7 @@ void Edmonds_Karp(HWND hdlg)
 		ok=1;
 		while (ok==1) 
 			bfs();
+		end=clock();
 		 char msg[30];   
 		 sprintf(msg," fluxul maxim este %d  \n",flow);
 		 MessageBox(hdlg,msg,"Success",MB_OK);
@@ -417,19 +420,20 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 	LoadString(hInstance, IDC_WIN32PROJECT1, szWindowClass, MAX_LOADSTRING);
 	 const wchar_t CLASS_NAME[]  = L"Sample Window Class"; //crearea unei clase in clasa windows
 	WNDCLASS wc = { };
-	//	wc.style			= CS_HREDRAW | CS_VREDRAW;
+	wc.style			= CS_HREDRAW|CS_VREDRAW;
 	wc.lpfnWndProc		= WndProc;
 	wc.hInstance		= hInstance;
 	wc.lpszClassName	= szWindowClass;
 	wc.hIcon			= LoadIcon(NULL,IDI_SHIELD);// imi incarca un bmp in stanga sus ca iconita
 	wc.hCursor			= LoadCursor(NULL, IDC_HAND);
 	wc.hbrBackground	= (HBRUSH)(COLOR_WINDOW+2);
+	wc.lpszMenuName = NULL;
 	RegisterClass(&wc);
 	hInst = hInstance; // Store instance handle in our global variable
 	HWND  hWnd = CreateWindowEx(0,						// Optional window styles.
 						szWindowClass,					  // Window class. clasa din care face parte fereastra
 						"Edmonds-Karp Alghorithm",		 // Window text// textul pe care l vreau afisat in taskbar
-						WS_OVERLAPPEDWINDOW,			 // Window style
+						WS_OVERLAPPEDWINDOW|CS_BYTEALIGNWINDOW|CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS,			 // Window style
 						 // Size and position
 						  0, 0,1320, 720, // primele doua sunt x, y din stanga sus...iar urmatoareale latimea si inaltimea
 						 NULL,// Parent window  
@@ -443,7 +447,8 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
-
+   hDC = GetDC(hWnd);
+   Paint(hWnd);
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0)>0)
 	{
@@ -469,16 +474,19 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 //}
 void timp_edmonds_carp(HWND hWnd)
 {
-	begin=clock();
+	if(cont_timp<=7)
+	{
 	Edmonds_Karp(hWnd);
 	//MessageBox(hWnd,"1","check",MB_OK);
-	end=clock();
 	char timp[10];
 	tmp=(float)(end-begin)/CLOCKS_PER_SEC;
 	mem_timp[cont_timp]=tmp;
 	cont_timp++;
 	sprintf(timp,"%f ",tmp);
 	MessageBox(hWnd,timp,"TIMP",MB_OK);
+	}
+	else
+		MessageBox(hWnd,"Ati depasit numarul maxim de 7 comparatii\nApasati reinitializare","Warning",MB_OK);
 	//sprintf(timp,"%s",time_spent);
 	//MessageBox(hWnd,"3","check",MB_OK);
 	//	MessageBox(hWnd,timp,"Timp",MB_OK);
@@ -487,11 +495,9 @@ void timp_edmonds_carp(HWND hWnd)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId=0, wmEvent=0;
-	HWND hButton=NULL;
-	PAINTSTRUCT ps;
-	HPEN pen;
-	
+	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL;
 	HDC hdc=NULL;
+	PAINTSTRUCT ps;
 	HWND d1=NULL, d2=NULL, d3=NULL;
 	OPENFILENAME fon;
 	static POINT p1;
@@ -518,49 +524,55 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		
 	
 		case WM_CREATE:
-				
-			hButton = CreateWindowEx( NULL,"button", "Random",
+			GetClientRect(hWnd,&wndrect);	
+			hButton2 = CreateWindowEx( NULL,"button", "Random",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						10, 160, 
-						110, 20,
+						wndrect.left+10 , wndrect.top+130, 
+						130, 25,
 						hWnd, (HMENU) 14,
 						hInst, NULL );
-
-			 hButton = CreateWindowEx( NULL,"button", "Start",
+			 hButton1 = CreateWindowEx( NULL,"BUTTON", "Start",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON  ,
-						10, 10, 
-						70, 20,
+						wndrect.left+10,wndrect.top+ 10, 
+						130, 25,
 						hWnd, (HMENU) 1,
 						hInst, NULL );
 
-			 hButton = CreateWindowEx(NULL, "button", "Creare",
+			 hButton3 = CreateWindowEx(NULL, "button", "Creare",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						10, 40, 
-						130, 20,
+						wndrect.left+10, wndrect.top+40, 
+						130, 25,
 						hWnd, (HMENU) 8,
 						hInst, NULL );
 
-			 hButton = CreateWindowEx(NULL, "button", "Reinitializare",
+			 hButton4 = CreateWindowEx(NULL, "button", "Reinitializare",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						10, 70, 
-						130, 20,
+						wndrect.left+10, wndrect.top+70, 
+						130, 25,
 						hWnd, (HMENU) 9,
 						hInst, NULL );
 	
-			hButton = CreateWindowEx(NULL, "button", "Help!",
-						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						10, 100, 
-						70, 20,
+			hButton5 = CreateWindowEx(NULL, "button", "Help!",
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
+						wndrect.left+10, wndrect.top+100, 
+						130, 25,
 						hWnd, (HMENU) 5,
 						hInst, NULL );
 
-			hButton = CreateWindowEx( NULL,"button", "Exit",
+			hButton6 = CreateWindowEx( NULL,"button", "Grafic",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						10 , 130, 
-						70, 20,
+						wndrect.left+10, wndrect.top+160, 
+						130, 25,
+						hWnd, (HMENU) 25,
+						hInst, NULL );
+
+			hButton7 = CreateWindowEx( NULL,"button", "Exit",
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
+						wndrect.left+10, wndrect.top+190, 
+						130, 25,
 						hWnd, (HMENU) 6,
 						hInst, NULL );
-			break;
+		break;
 			case WM_COMMAND:
 				wmId    = LOWORD(wParam);
 				wmEvent = HIWORD(wParam);
@@ -575,6 +587,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				case 9:
 					reinitializare(szFileName,hWnd);
+					
 				break;
 				case 7:
 				 if (szFileName)
@@ -600,20 +613,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				case 6:
 					PostQuitMessage(0);
-					break;
+				break;
+				case 25:
+					Paint_Grafic(hWnd);
+				break;
 				default:
 					return DefWindowProc(hWnd, message, wParam, lParam);
 				}
 				break;
 		case WM_PAINT:
+				
 				hdc=BeginPaint(hWnd,&ps);
-				pen=CreatePen(PS_SOLID,2,RGB(0,0,255));
-				SelectObject(hdc,pen);
-				Rectangle(hdc,poz_i,600,poz_i+100,600-tmp*100);
 				EndPaint(hWnd,&ps);
-				poz_i=+100;
+				poz_i=poz_i+10;
+				
 			//////////////////pentru desenare
 				break;
+		case WM_ACTIVATE:
+			Paint(hWnd);
+			break;
 		case WM_DESTROY:
 				PostQuitMessage(0);
 			break;
@@ -640,4 +658,65 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 	}
 	return (INT_PTR)FALSE;
+}
+void Paint(HWND hwnd)
+{
+	RECT wndrect;
+
+	GetClientRect(hwnd,&wndrect);
+
+	drawrect.bottom = wndrect.bottom - 10;
+	drawrect.left	= wndrect.left + 700;
+	drawrect.right	= wndrect.right - 10;
+	drawrect.top	= wndrect.top +10;
+	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
+	drawrect.bottom = wndrect.bottom - 9;
+	drawrect.left	= wndrect.left + 699;
+	drawrect.right	= wndrect.right - 11;
+	drawrect.top	= wndrect.top +11;
+	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
+	drawrect.bottom = 230;
+	drawrect.left	= NULL;
+	drawrect.right	= 150;
+	drawrect.top	= NULL;
+	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
+	drawrect.bottom = 231;
+	drawrect.left	= NULL;
+	drawrect.right	= 151;
+	drawrect.top	= NULL;
+	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
+}
+
+void Paint_Grafic(HWND hwnd)
+{
+	HWND Grafic[10];
+	char nume[10];
+	/*HPEN pen;
+	PAINTSTRUCT ps;
+	HDC hdc=NULL;
+	hdc=BeginPaint(hwnd,&ps);
+	pen=CreatePen(PS_SOLID,2,RGB(0,0,255));
+	SelectObject(hdc,pen);
+	Rectangle(hdc,0,600,100,0);
+	Rectangle(hdc,poz_i+50,,poz_i+150,600-tmp*100);
+	EndPaint(hwnd,&ps);
+	*/
+	//calculare coeficient inmultire
+	float coeficient=0;
+	float timp_maxim=0;
+	for(int yy=0;yy<=cont_timp;yy++)
+		if(timp_maxim<mem_timp[yy])
+			timp_maxim=mem_timp[yy];
+	coeficient=400/(timp_maxim*100)*100*1.3;
+	for(int q=1;q<=cont_timp;q++)
+			SendMessage(Grafic[q], WM_CLOSE, 0, 0);
+	for(int kkk=1;kkk<=cont_timp;kkk++)
+		{sprintf(nume,"Grafic %d",kkk);
+			Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
+							WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
+							700,(kkk-1)*100+14, 
+							mem_timp[kkk]*coeficient,100,
+							hwnd, NULL,
+							hInst, NULL );
+	}
 }
