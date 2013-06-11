@@ -496,10 +496,7 @@ void timp_edmonds_carp(HWND hWnd)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	COLORREF clrRedish = RGB(255, 155, 26);
-	RECT rect; //Obiect dreptunghi
-	rect.bottom=200;rect.left=110;rect.right=200;rect.top=110;
-	RECT  Recto = { 0,0, 150, 230};
+	RECT  rect = { 110,110, 200, 200};
 	int wmId=0, wmEvent=0;
 	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL;
 	HDC hdc=NULL;
@@ -635,17 +632,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				LogBrush.lbStyle = BS_HATCHED;
 				 LogBrush.lbColor = RGB(255, 0, 255);
 				LogBrush.lbHatch = HS_DIAGCROSS;
-
-				 brLogBrush = CreateBrushIndirect(&LogBrush);
-             SelectObject(hdc, brLogBrush);
-
-             Rectangle(hdc, 160, 280, 250, 175);
- 
-             DeleteObject(brLogBrush);
-				SetBkColor(hdc, RGB(255, 25, 25));
-				SetTextColor(hdc, clrRedish);
-				TextOut(hdc, 500, 420, "SAVA MARIUS", 13);
-				ExtTextOut(hdc, 250, 222, ETO_OPAQUE, &Recto, "Sava Marius", 13, NULL);
+				brLogBrush = CreateBrushIndirect(&LogBrush);
+			    SelectObject(hdc, brLogBrush);
+				Rectangle(hdc, 0, 0, 150,230);
+				DeleteObject(brLogBrush);
+				
+				
+				
 				EndPaint(hWnd,&ps);
 				
 			//////////////////pentru desenare
@@ -685,7 +678,6 @@ void Paint(HWND hwnd)
 	RECT wndrect;
 
 	GetClientRect(hwnd,&wndrect);
-
 	drawrect.bottom = wndrect.bottom ;
 	drawrect.left	= wndrect.left + 700;
 	drawrect.right	= wndrect.right;
@@ -698,12 +690,12 @@ void Paint(HWND hwnd)
 	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
 	drawrect.bottom = 230;
 	drawrect.left	= NULL;
-	drawrect.right	= 150;
+	drawrect.right	= wndrect.left + 700;
 	drawrect.top	= NULL;
 	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
 	drawrect.bottom = 231;
 	drawrect.left	= NULL;
-	drawrect.right	= 151;
+	drawrect.right	= wndrect.left + 700;
 	drawrect.top	= NULL;
 	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
 }
