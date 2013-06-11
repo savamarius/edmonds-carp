@@ -494,93 +494,82 @@ void timp_edmonds_carp(HWND hWnd)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	//declaratii nu toate iti trebuie
-	int wmId, wmEvent,ii=0;
+	int wmId=0, wmEvent=0;
+	HWND hButton=NULL;
 	PAINTSTRUCT ps;
-	//HPEN bluePen; 
-	//HGDIOBJ oldPen;
-	//HFONT font;
-	static HWND hButton;
-	HDC hdc;
-	//LPCSTR Y;
-	//HICON hicon, hicon_sm;
+	HDC hdc=NULL;
 	HWND d1=NULL, d2=NULL, d3=NULL;
 	OPENFILENAME fon;
-	POINT p1;
+	static POINT p1;
 	static POINT p2;
 	switch (message)
 	{
 		//functie pentru desenarea pe suprafata de lucru a diferitelor elemente de grafica
-		//		case WM_LBUTTONDOWN:
-		//			
-		//p1.x=LOWORD(lParam);
-		//p1.y=HIWORD(lParam);
-		//
-		////Rectangle(hdc, 200,20,1223,650);
-		//
-		//if (p1.x>220 && p1.x<1200 && p1.y>30 && p1.y<620)
-		//		{
-		//hdc=GetDC(hWnd); //Obtinerea contextului grafic
-		//Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
-		//MoveToEx(hdc,p2.x,p2.y,NULL);
-		//LineTo(hdc,p1.x,p1.y);
-		//p2=p1;
-		//ReleaseDC(hWnd,hdc); }//Eliberarea contextului grafic
-		//return 0;
-		//case WM_DESTROY:
-		//PostQuitMessage(0);
-		//return 0;
-		//default: return DefWindowProc(hWnd, message, wParam, lParam);
+		/*case WM_LBUTTONDOWN:
+				
+		p1.x=LOWORD(lParam);
+		p1.y=HIWORD(lParam);
+		
+		Rectangle(hdc, 200,20,1223,650);
+	
+		if (p1.x>220 && p1.x<1200 && p1.y>30 && p1.y<620)
+				{
+		hdc=GetDC(hWnd); //Obtinerea contextului grafic
+		Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
+		MoveToEx(hdc,p2.x,p2.y,NULL);
+		LineTo(hdc,p1.x,p1.y);
+		p2=p1;
+		ReleaseDC(hWnd,hdc); }//Eliberarea contextului grafic
+		return 0;*/
+		
+	
 		case WM_CREATE:
-			//	Rectangle(HDC hdc, int x1, int y1, int x2, int y2);
-			 hButton = CreateWindow( "button", "Random",
-			WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						0, 160, 
+				
+			hButton = CreateWindowEx( NULL,"button", "Random",
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
+						10, 160, 
 						110, 20,
 						hWnd, (HMENU) 14,
 						hInst, NULL );
 
-			 hButton = CreateWindow( "button", "Start",
-						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						0, 10, 
+			 hButton = CreateWindowEx( NULL,"button", "Start",
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON  ,
+						10, 10, 
 						70, 20,
 						hWnd, (HMENU) 1,
 						hInst, NULL );
 
-			 hButton = CreateWindow( "button", "Creare",
+			 hButton = CreateWindowEx(NULL, "button", "Creare",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						0, 40, 
+						10, 40, 
 						130, 20,
 						hWnd, (HMENU) 8,
 						hInst, NULL );
 
-			 hButton = CreateWindow( "button", "Reinitializare",
+			 hButton = CreateWindowEx(NULL, "button", "Reinitializare",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						0, 70, 
+						10, 70, 
 						130, 20,
 						hWnd, (HMENU) 9,
 						hInst, NULL );
 	
-			hButton = CreateWindow( "button", "Help!",
+			hButton = CreateWindowEx(NULL, "button", "Help!",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						0, 100, 
+						10, 100, 
 						70, 20,
 						hWnd, (HMENU) 5,
 						hInst, NULL );
 
-			hButton = CreateWindow( "button", "Exit",
+			hButton = CreateWindowEx( NULL,"button", "Exit",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						0 , 130, 
+						10 , 130, 
 						70, 20,
 						hWnd, (HMENU) 6,
 						hInst, NULL );
 			break;
-	/*  hdc=GetDC(hWnd);
-	Rectangle(hdc, 200,50,240,80);
-	ReleaseDC(hWnd,hdc);*/
-		case WM_COMMAND:
-			wmId    = LOWORD(wParam);
-			wmEvent = HIWORD(wParam);
+			case WM_COMMAND:
+				wmId    = LOWORD(wParam);
+				wmEvent = HIWORD(wParam);
 			// Parse the menu selections:
 			switch (wmId)
 			{
@@ -589,14 +578,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				case 1:
 					timp_edmonds_carp(hWnd);
-		//		begin=clock();
-	
-		//		Edmonds_Karp(hWnd);
-		//		end=clock();
-		//		time_spent=(double)(end-begin)/CLOCKS_PER_SEC;
-		//		char *timp=NULL;
-		//		sprintf(timp,"%s",time_spent);
-		//		MessageBox(hWnd,timp,"Timp",MB_OK);
 				break;
 				case 9:
 					reinitializare(szFileName,hWnd);
@@ -624,22 +605,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 				break;
 				case 6:
-					DestroyWindow(hWnd);
+					PostQuitMessage(0);
 					break;
-				case BUTTON_ID:
-					//MessageBox(0,cuvant_out(),"INFORMATII",0);//functie pentru buton
 				default:
 					return DefWindowProc(hWnd, message, wParam, lParam);
 				}
 				break;
-				case WM_PAINT:
+		case WM_PAINT:
+				hdc=BeginPaint(hWnd,&ps);
+				EndPaint(hWnd,&ps);
 			//////////////////pentru desenare
 				break;
-				case WM_DESTROY:
-					PostQuitMessage(0);
-				break;
-				default:
-					return DefWindowProc(hWnd, message, wParam, lParam);
+		case WM_DESTROY:
+				PostQuitMessage(0);
+			break;
+		default:
+				return DefWindowProc(hWnd, message, wParam, lParam);
 			}
 		return 0;
 }
