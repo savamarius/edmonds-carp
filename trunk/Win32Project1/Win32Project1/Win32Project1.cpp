@@ -24,6 +24,7 @@ void Paint(HWND hwnd);
 clock_t begin,end;
 int time_spent;
 float tmp;
+HWND Grafic[10];
 typedef struct celula
 {
 	int nod;
@@ -433,7 +434,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 	HWND  hWnd = CreateWindowEx(0,						// Optional window styles.
 						szWindowClass,					  // Window class. clasa din care face parte fereastra
 						"Edmonds-Karp Alghorithm",		 // Window text// textul pe care l vreau afisat in taskbar
-						WS_OVERLAPPEDWINDOW|CS_BYTEALIGNWINDOW|CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS,			 // Window style
+						WS_OVERLAPPEDWINDOW|CS_BYTEALIGNWINDOW|WS_BORDER,			 // Window style
 						 // Size and position
 						  0, 0,1320, 720, // primele doua sunt x, y din stanga sus...iar urmatoareale latimea si inaltimea
 						 NULL,// Parent window  
@@ -689,7 +690,7 @@ void Paint(HWND hwnd)
 
 void Paint_Grafic(HWND hwnd)
 {
-	HWND Grafic[10];
+	
 	char nume[10];
 	/*HPEN pen;
 	PAINTSTRUCT ps;
@@ -709,7 +710,7 @@ void Paint_Grafic(HWND hwnd)
 			timp_maxim=mem_timp[yy];
 	coeficient=400/(timp_maxim*100)*100*1.3;
 	for(int q=1;q<=cont_timp;q++)
-			SendMessage(Grafic[q], WM_CLOSE, 0, 0);
+			DestroyWindow(Grafic[q]);
 	for(int kkk=1;kkk<=cont_timp;kkk++)
 		{sprintf(nume,"Grafic %d",kkk);
 			Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
