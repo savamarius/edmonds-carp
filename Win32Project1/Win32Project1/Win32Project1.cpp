@@ -21,6 +21,7 @@ int mem_timp[10],cont_timp=0;
 int poz_i=220;
 clock_t begin,end;
 int time_spent;
+float tmp;
 typedef struct celula
 {
 	int nod;
@@ -472,24 +473,15 @@ void timp_edmonds_carp(HWND hWnd)
 	Edmonds_Karp(hWnd);
 	//MessageBox(hWnd,"1","check",MB_OK);
 	end=clock();
-	char timp[10];int tmp;
-	tmp=(int)(end-begin)/CLOCKS_PER_SEC;
+	char timp[10];
+	tmp=(float)(end-begin)/CLOCKS_PER_SEC;
 	mem_timp[cont_timp]=tmp;
 	cont_timp++;
-	timp[0]=sprintf(timp,"%.10f ",tmp);
+	sprintf(timp,"%f ",tmp);
 	MessageBox(hWnd,timp,"TIMP",MB_OK);
 	//sprintf(timp,"%s",time_spent);
 	//MessageBox(hWnd,"3","check",MB_OK);
 	//	MessageBox(hWnd,timp,"Timp",MB_OK);
-
-	HDC hdc; //contextul grafic
-	PAINTSTRUCT ps;
-	RECT rect; //Obiect dreptunghi
-	hdc = BeginPaint(hWnd, &ps); //Obţinerea contextului grafic
-	GetClientRect(hWnd,&rect); //Obţinerea suprafeţei de desenare
-	//Scrierea unui text în fereastră
-	DrawText(hdc,"Merge",-1,&rect,DT_CENTER|DT_VCENTER);
-	EndPaint(hWnd, &ps);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -497,6 +489,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId=0, wmEvent=0;
 	HWND hButton=NULL;
 	PAINTSTRUCT ps;
+	HPEN pen;
+	
 	HDC hdc=NULL;
 	HWND d1=NULL, d2=NULL, d3=NULL;
 	OPENFILENAME fon;
@@ -613,7 +607,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 		case WM_PAINT:
 				hdc=BeginPaint(hWnd,&ps);
+				pen=CreatePen(PS_SOLID,2,RGB(0,0,255));
+				SelectObject(hdc,pen);
+				Rectangle(hdc,poz_i,600,poz_i+100,600-tmp*100);
 				EndPaint(hWnd,&ps);
+				poz_i=+100;
 			//////////////////pentru desenare
 				break;
 		case WM_DESTROY:
