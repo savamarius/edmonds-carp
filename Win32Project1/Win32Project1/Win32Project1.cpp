@@ -19,7 +19,6 @@ int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
 float mem_timp[5];
 int cont_timp=1;
-int poz_i=700;
 void Paint(HWND hwnd);
 clock_t begin,end;
 int time_spent;
@@ -436,16 +435,18 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 						"Edmonds-Karp Alghorithm",		 // Window text// textul pe care l vreau afisat in taskbar
 						WS_OVERLAPPEDWINDOW|CS_BYTEALIGNWINDOW|WS_BORDER,			 // Window style
 						 // Size and position
-						  0, 0,1320, 720, // primele doua sunt x, y din stanga sus...iar urmatoareale latimea si inaltimea
+						  0, 0,1350, 720, // primele doua sunt x, y din stanga sus...iar urmatoareale latimea si inaltimea
 						 NULL,// Parent window  
 						  NULL, // Menu
 						  hInstance,// Instance handle
 						  NULL); // Additional application data
-   if (hWnd==NULL)
+	// Test if the window was created successfully
+	if (hWnd==NULL)
    {
+	   MessageBox(NULL, TEXT("Window could not be opened!"),szWindowClass, MB_ICONERROR);
       return 0;
    }
-   ShowWindow(hWnd, nCmdShow);
+   ShowWindow(hWnd, SW_MAXIMIZE);
    UpdateWindow(hWnd);
 
    hDC = GetDC(hWnd);
@@ -495,11 +496,16 @@ void timp_edmonds_carp(HWND hWnd)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	COLORREF clrRedish = RGB(255, 155, 26);
+	RECT rect; //Obiect dreptunghi
+	rect.bottom=200;rect.left=110;rect.right=200;rect.top=110;
+	RECT  Recto = { 0,0, 150, 230};
 	int wmId=0, wmEvent=0;
 	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL;
 	HDC hdc=NULL;
 	PAINTSTRUCT ps;
-	HWND d1=NULL, d2=NULL, d3=NULL;
+	HBRUSH      brLogBrush;
+	 LOGBRUSH    LogBrush;
 	OPENFILENAME fon;
 	static POINT p1;
 	static POINT p2;
@@ -625,8 +631,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_PAINT:
 				
 				hdc=BeginPaint(hWnd,&ps);
+				GetClientRect(hWnd,&rect);
+				LogBrush.lbStyle = BS_HATCHED;
+				 LogBrush.lbColor = RGB(255, 0, 255);
+				LogBrush.lbHatch = HS_DIAGCROSS;
+
+				 brLogBrush = CreateBrushIndirect(&LogBrush);
+             SelectObject(hdc, brLogBrush);
+
+             Rectangle(hdc, 160, 280, 250, 175);
+ 
+             DeleteObject(brLogBrush);
+				SetBkColor(hdc, RGB(255, 25, 25));
+				SetTextColor(hdc, clrRedish);
+				TextOut(hdc, 500, 420, "SAVA MARIUS", 13);
+				ExtTextOut(hdc, 250, 222, ETO_OPAQUE, &Recto, "Sava Marius", 13, NULL);
 				EndPaint(hWnd,&ps);
-				poz_i=poz_i+10;
 				
 			//////////////////pentru desenare
 				break;
@@ -666,15 +686,15 @@ void Paint(HWND hwnd)
 
 	GetClientRect(hwnd,&wndrect);
 
-	drawrect.bottom = wndrect.bottom - 10;
+	drawrect.bottom = wndrect.bottom ;
 	drawrect.left	= wndrect.left + 700;
-	drawrect.right	= wndrect.right - 10;
-	drawrect.top	= wndrect.top +10;
+	drawrect.right	= wndrect.right;
+	drawrect.top	= wndrect.top ;
 	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
-	drawrect.bottom = wndrect.bottom - 9;
+	drawrect.bottom = wndrect.bottom - 1;
 	drawrect.left	= wndrect.left + 699;
-	drawrect.right	= wndrect.right - 11;
-	drawrect.top	= wndrect.top +11;
+	drawrect.right	= wndrect.right -1;
+	drawrect.top	= wndrect.top +1;
 	FrameRect(hDC,&drawrect,CreateSolidBrush(0xffffff));
 	drawrect.bottom = 230;
 	drawrect.left	= NULL;
@@ -690,7 +710,6 @@ void Paint(HWND hwnd)
 
 void Paint_Grafic(HWND hwnd)
 {
-	
 	char nume[10];
 	/*HPEN pen;
 	PAINTSTRUCT ps;
@@ -712,10 +731,10 @@ void Paint_Grafic(HWND hwnd)
 	for(int q=1;q<=cont_timp;q++)
 			DestroyWindow(Grafic[q]);
 	for(int kkk=1;kkk<=cont_timp;kkk++)
-		{sprintf(nume,"Grafic %d",kkk);
+		{sprintf(nume,"Bar %d",kkk);
 			Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
 							WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-							700,(kkk-1)*100+14, 
+							700,(kkk-1)*100+5, 
 							mem_timp[kkk]*coeficient,100,
 							hwnd, NULL,
 							hInst, NULL );
