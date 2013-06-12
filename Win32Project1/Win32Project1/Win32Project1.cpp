@@ -27,7 +27,7 @@ float tmp;
 enum EMode
 {
 	eDisplayBar,
-	eDisplayLines,
+	eDisplayBUTTON,
 	eDisplayFilled,
 	eDisplayPixels,
 	out
@@ -36,6 +36,7 @@ enum EMode
 // Global variable for current mode
 EMode gMode=out;
 void DisplayBar(HDC hdc);
+HWND  hWnd;
 
 HWND Grafic[10];
 typedef struct celula
@@ -413,7 +414,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 	wc.lpszMenuName = NULL;
 	RegisterClass(&wc);
 	hInst = hInstance; // Store instance handle in our global variable
-	HWND  hWnd = CreateWindowEx(0,						// Optional window styles.
+	hWnd = CreateWindowEx(0,						// Optional window styles.
 						szWindowClass,					  // Window class. clasa din care face parte fereastra
 						"Edmonds-Karp Alghorithm",		 // Window text// textul pe care l vreau afisat in taskbar
 						WS_OVERLAPPEDWINDOW|CS_BYTEALIGNWINDOW|WS_BORDER,			 // Window style
@@ -609,14 +610,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					PostQuitMessage(0);
 				break;
 				case 25:
-					Paint_Grafic(hWnd);
-					gMode=eDisplayBar;
+					gMode=eDisplayBUTTON;
+					
 				break;
 				default:
 					return DefWindowProc(hWnd, message, wParam, lParam);
 				}
 			// Force a redraw when a key is pressed
 		case WM_KEYDOWN:
+			gMode=eDisplayBUTTON;
+			 desenare(hdc);
 			InvalidateRect(hWnd,NULL,TRUE);
 		break;
 				
@@ -745,6 +748,11 @@ void desenare(HDC hdc)
 	
 	switch(gMode)
 	{
+	case eDisplayBUTTON:
+		{
+		Paint_Grafic(hWnd);
+		gMode=eDisplayBar;}
+		
 	case eDisplayBar:
 		DisplayBar(hdc);
 		break;
@@ -755,6 +763,7 @@ void desenare(HDC hdc)
 }
 void DisplayBar(HDC hdc)
 {
+	int colour;
 	float coeficient=0;
 	float timp_maxim=0;
 	for(int yy=0;yy<=cont_timp;yy++)
@@ -762,23 +771,21 @@ void DisplayBar(HDC hdc)
 			timp_maxim=mem_timp[yy];
 	coeficient=400/(timp_maxim*100)*100*1.6;
 	int jj,jjj,yyy;
-	jjj=0;
+	jjj=5;
 	yyy=jjj+100;
 	for(int kkk=1;kkk<cont_timp;kkk++)
 	{
-	
+		colour=RGB(rand()%255,rand()%255,rand()%255);
 		for( jj=801;jj<mem_timp[kkk]*coeficient+701;jj++)
 		{
 					for( jjj;jjj<yyy;jjj++)
 					{
 						Sleep(0.2);
-						SetPixel(hdc, jj, jjj, RGB(rand()%255,55,5));
+						SetPixel(hdc, jj, jjj, colour);
 					}
-		jjj=yyy-100;
+					jjj=yyy-100;
 		}
 		yyy=yyy+100;
-		
-
 	}
 
 }
