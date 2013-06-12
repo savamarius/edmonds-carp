@@ -516,10 +516,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		
 		if (p1.x<690 && p1.x>10 && p1.y>240 && p1.y<675)
 				{
+
+		HWND Grafic= CreateWindowEx( NULL,"button", "" ,
+				WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
+				p1.x,p1.y, 
+				20,20,
+				hWnd, NULL,
+				hInst, NULL );
 		hdc=GetDC(hWnd); //Obtinerea contextului grafic
-		Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
-		MoveToEx(hdc,p2.x,p2.y,NULL);
-		LineTo(hdc,p1.x,p1.y);
+	//	Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
+	//	MoveToEx(hdc,p2.x,p2.y,NULL);
+	//	LineTo(hdc,p1.x,p1.y);
 		
 		p2=p1;
 		ReleaseDC(hWnd,hdc); }//Eliberarea contextului grafic
@@ -634,6 +641,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				brLogBrush = CreateBrushIndirect(&LogBrush);
 			    SelectObject(hdc, brLogBrush);
 				Rectangle(hdc, 0, 0, 150,230);
+				int jj,jjj;
+				for( jj=0;jj<700;jj++)
+					for( jjj=0;jjj<300;jjj++)
+					{
+						Sleep(0.2);
+						SetPixel(hdc, jj, jjj, RGB(255,53,246));
+					}
+				for( jj=701;jj<1360;jj++)
+					for( jjj=0;jjj<500;jjj++)
+					{
+						Sleep(0.6);
+						SetPixel(hdc, jj, jjj, RGB(255,53,246));
+					}
 				DeleteObject(brLogBrush);
 				
 				
@@ -722,11 +742,14 @@ void Paint_Grafic(HWND hwnd)
 			DestroyWindow(Grafic[q]);
 	for(int kkk=1;kkk<=cont_timp;kkk++)
 		{sprintf(nume,"Bar %d",kkk);
+	
+	for(int kappa=1;kappa<100;kappa++)
 			Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
 							WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
 							701,(kkk-1)*100+5, 
 							mem_timp[kkk]*coeficient,100,
 							hwnd, NULL,
 							hInst, NULL );
+	
 	}
 }
