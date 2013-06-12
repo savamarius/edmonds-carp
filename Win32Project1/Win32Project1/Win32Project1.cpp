@@ -15,15 +15,28 @@
 #include<fstream>
 #include<cstring>
 char szFileName[MAX_PATH] = "";
+void desenare(HDC hdc);
 int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
 float mem_timp[7];
 int cont_timp=1;
 void Paint(HWND hwnd);
 clock_t begin,end;
-bool graf_ok=FALSE;// verificare daca a fost apasat butonul grafic
 int time_spent;
 float tmp;
+enum EMode
+{
+	eDisplayBar,
+	eDisplayLines,
+	eDisplayFilled,
+	eDisplayPixels,
+	out
+};
+
+// Global variable for current mode
+EMode gMode=out;
+void DisplayBar(HDC hdc);
+
 HWND Grafic[10];
 typedef struct celula
 {
@@ -466,7 +479,7 @@ void timp_edmonds_carp(HWND hWnd)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int jj,jjj;
+	
 	//RECT  rect = { 110,110, 200, 200};
 	int wmId=0, wmEvent=0;
 	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL;
@@ -597,10 +610,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				case 25:
 					Paint_Grafic(hWnd);
+					gMode=eDisplayBar;
 				break;
 				default:
 					return DefWindowProc(hWnd, message, wParam, lParam);
 				}
+			// Force a redraw when a key is pressed
+		case WM_KEYDOWN:
+			InvalidateRect(hWnd,NULL,TRUE);
+		break;
 				
 		case WM_PAINT:
 				hdc=BeginPaint(hWnd,&ps);
@@ -626,12 +644,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				brLogBrush = CreateBrushIndirect(&LogBrush);
 			    SelectObject(hdc, brLogBrush);
 				Rectangle(hdc, 700, 0, 1370,750);
-				for( jj=801;jj</*mem_timp[kkk]*coeficient+*/999;jj++)
-					for( jjj=0;jjj<100;jjj++)
-					{
-						Sleep(0.2);
-						SetPixel(hdc, jj, jjj, RGB(45,25,167));
-				}
+				
 				////////////////////////////////////////////////////
 				LogBrush.lbStyle = BS_HATCHED;
 				LogBrush.lbColor = RGB(255, 0, 255);
@@ -641,6 +654,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				Rectangle(hdc, 0, 0, 150,230);
 				////////////////////////////////////////////////////////
 				DeleteObject(brLogBrush);
+				desenare(hdc);
 				EndPaint(hWnd,&ps);
 				
 				
@@ -722,8 +736,31 @@ void Paint_Grafic(HWND hwnd)
 						mem_timp[kkk]*coeficient,100,//100,100,
 						hwnd, NULL,
 					hInst, NULL );
-	graf_ok=TRUE;	
 	}
 	
 	
+}
+void desenare(HDC hdc)
+{	
+	
+	switch(gMode)
+	{
+	case eDisplayBar:
+		DisplayBar(hdc);
+		break;
+	default: return;
+	}
+	
+
+}
+void DisplayBar(HDC hdc)
+{
+	int jj,jjj;
+	for( jj=801;jj</*mem_timp[kkk]*coeficient+*/999;jj++)
+					for( jjj=0;jjj<100;jjj++)
+					{
+						Sleep(0.2);
+						SetPixel(hdc, jj, jjj, RGB(rand()%255,55,5));
+					}
+
 }
