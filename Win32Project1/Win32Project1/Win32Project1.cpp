@@ -17,10 +17,11 @@
 char szFileName[MAX_PATH] = "";
 int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
-float mem_timp[5];
+float mem_timp[7];
 int cont_timp=1;
 void Paint(HWND hwnd);
 clock_t begin,end;
+bool graf_ok=FALSE;// verificare daca a fost apasat butonul grafic
 int time_spent;
 float tmp;
 HWND Grafic[10];
@@ -267,37 +268,6 @@ void reinitializare(char*fisier,HWND hdlg)
 //
 //
 }
-void afisare_grafice(HWND hWnd)
-{ //HDC hdc;
-//
-//PAINTSTRUCT ps;
-//	hdc = BeginPaint(hWnd, &ps);
-//	
-//
-//	int poz_i=220;
-//	
-//	for(int j=0;j<cont_timp;j++)
-//	{
-//	
-//	//Rectangle(hdc, 200,20,1223,650);
-//	Rectangle(hdc, 220,600,poz_i+50,600-mem_timp[j]*100);
-//	for(int j1=220;j1<=600;j1++)
-//			 for (int j2=poz_i+50;j2<600-mem_timp[j];j2++)
-//				 SetPixel( hdc, j1, j2,RGB(222,0,100));
-//	poz_i+=50;
-//	
-//	}
-//		EndPaint(hWnd, &ps);
-
-	HDC hdc; //contextul grafic
-	PAINTSTRUCT ps;
-	RECT rect; //Obiect dreptunghi
-	hdc = BeginPaint(hWnd, &ps); //Obţinerea contextului grafic
-	GetClientRect(hWnd,&rect); //Obţinerea suprafeţei de desenare
-	//Scrierea unui text în fereastră
-	DrawText(hdc,"Primul program",-1,&rect,DT_CENTER|DT_VCENTER);
-	EndPaint(hWnd, &ps);
-}
 // sfarsitul codului
 //Procedurile de fereastră a casetelor de dialog
 
@@ -496,7 +466,8 @@ void timp_edmonds_carp(HWND hWnd)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	RECT  rect = { 110,110, 200, 200};
+	int jj,jjj;
+	//RECT  rect = { 110,110, 200, 200};
 	int wmId=0, wmEvent=0;
 	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL;
 	HDC hdc=NULL;
@@ -630,35 +601,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				default:
 					return DefWindowProc(hWnd, message, wParam, lParam);
 				}
-				break;
-		case WM_PAINT:
 				
+		case WM_PAINT:
 				hdc=BeginPaint(hWnd,&ps);
-				GetClientRect(hWnd,&rect);
-				LogBrush.lbStyle = BS_HATCHED;
-				 LogBrush.lbColor = RGB(255, 0, 255);
+			//	GetClientRect(hWnd,&rect);
+				///////////////////////////////////////////////////cadran I
+				LogBrush.lbStyle = BS_PATTERN;
+				LogBrush.lbColor = RGB(255, 0, 255);
 				LogBrush.lbHatch = HS_DIAGCROSS;
 				brLogBrush = CreateBrushIndirect(&LogBrush);
 			    SelectObject(hdc, brLogBrush);
 				Rectangle(hdc, 0, 0, 150,230);
-				int jj,jjj;
-				for( jj=0;jj<700;jj++)
-					for( jjj=0;jjj<300;jjj++)
+				////////////////////////////////////////////////cadran II
+				LogBrush.lbStyle = BS_HATCHED;
+				LogBrush.lbColor = RGB(220,220,220);
+				LogBrush.lbHatch =	HS_HORIZONTAL;
+				brLogBrush = CreateBrushIndirect(&LogBrush);
+			    SelectObject(hdc, brLogBrush);
+				Rectangle(hdc, 150, 0, 700,230);
+				//////////////////////////////////////////////////////cadran III
+				LogBrush.lbStyle = BS_HATCHED;
+				LogBrush.lbColor = RGB(220,220,220);
+				LogBrush.lbHatch =	HS_HORIZONTAL;
+				brLogBrush = CreateBrushIndirect(&LogBrush);
+			    SelectObject(hdc, brLogBrush);
+				Rectangle(hdc, 700, 0, 1370,750);
+				for( jj=801;jj</*mem_timp[kkk]*coeficient+*/999;jj++)
+					for( jjj=0;jjj<100;jjj++)
 					{
 						Sleep(0.2);
-						SetPixel(hdc, jj, jjj, RGB(255,53,246));
-					}
-				for( jj=701;jj<1360;jj++)
-					for( jjj=0;jjj<500;jjj++)
-					{
-						Sleep(0.6);
-						SetPixel(hdc, jj, jjj, RGB(255,53,246));
-					}
+						SetPixel(hdc, jj, jjj, RGB(45,25,167));
+				}
+				////////////////////////////////////////////////////
+				LogBrush.lbStyle = BS_HATCHED;
+				LogBrush.lbColor = RGB(255, 0, 255);
+				LogBrush.lbHatch = HS_DIAGCROSS;
+				brLogBrush = CreateBrushIndirect(&LogBrush);
+				 SelectObject(hdc, brLogBrush);
+				Rectangle(hdc, 0, 0, 150,230);
+				////////////////////////////////////////////////////////
 				DeleteObject(brLogBrush);
-				
-				
-				
 				EndPaint(hWnd,&ps);
+				
 				
 			//////////////////pentru desenare
 				break;
@@ -721,16 +705,6 @@ void Paint(HWND hwnd)
 void Paint_Grafic(HWND hwnd)
 {
 	char nume[10];
-	/*HPEN pen;
-	PAINTSTRUCT ps;
-	HDC hdc=NULL;
-	hdc=BeginPaint(hwnd,&ps);
-	pen=CreatePen(PS_SOLID,2,RGB(0,0,255));
-	SelectObject(hdc,pen);
-	Rectangle(hdc,0,600,100,0);
-	Rectangle(hdc,poz_i+50,,poz_i+150,600-tmp*100);
-	EndPaint(hwnd,&ps);
-	*/
 	//calculare coeficient inmultire
 	float coeficient=0;
 	float timp_maxim=0;
@@ -740,16 +714,16 @@ void Paint_Grafic(HWND hwnd)
 	coeficient=400/(timp_maxim*100)*100*1.6;
 	for(int q=1;q<=cont_timp;q++)
 			DestroyWindow(Grafic[q]);
-	for(int kkk=1;kkk<=cont_timp;kkk++)
-		{sprintf(nume,"Bar %d",kkk);
-	
-	for(int kappa=1;kappa<100;kappa++)
+	for(int kkk=1;kkk<cont_timp;kkk++)
+	{	sprintf(nume,"Bar %d",kkk);
 			Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
-							WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-							701,(kkk-1)*100+5, 
-							mem_timp[kkk]*coeficient,100,
-							hwnd, NULL,
-							hInst, NULL );
-	
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
+						701,(kkk-1)*100+5, //701,(kkk-1)*100+5,
+						mem_timp[kkk]*coeficient,100,//100,100,
+						hwnd, NULL,
+					hInst, NULL );
+	graf_ok=TRUE;	
 	}
+	
+	
 }
