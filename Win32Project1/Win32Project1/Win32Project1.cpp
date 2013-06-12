@@ -776,6 +776,7 @@ void DisplayBar(HDC hdc)
 					}
 		jjj=yyy-100;
 		}
+		yyy=yyy+100;
 		
 
 	}
