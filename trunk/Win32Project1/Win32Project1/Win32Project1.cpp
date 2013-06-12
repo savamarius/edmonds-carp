@@ -509,22 +509,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 		//functie pentru desenarea pe suprafata de lucru a diferitelor elemente de grafica
-		/*case WM_LBUTTONDOWN:
+		case WM_LBUTTONDOWN:
 				
 		p1.x=LOWORD(lParam);
 		p1.y=HIWORD(lParam);
 		
-		Rectangle(hdc, 200,20,1223,650);
-	
-		if (p1.x>220 && p1.x<1200 && p1.y>30 && p1.y<620)
+		if (p1.x<690 && p1.x>10 && p1.y>240 && p1.y<675)
 				{
 		hdc=GetDC(hWnd); //Obtinerea contextului grafic
 		Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
 		MoveToEx(hdc,p2.x,p2.y,NULL);
 		LineTo(hdc,p1.x,p1.y);
+		
 		p2=p1;
 		ReleaseDC(hWnd,hdc); }//Eliberarea contextului grafic
-		return 0;*/
+		return 0;
 		
 	
 		case WM_CREATE:
@@ -676,7 +675,6 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 void Paint(HWND hwnd)
 {
 	RECT wndrect;
-
 	GetClientRect(hwnd,&wndrect);
 	drawrect.bottom = wndrect.bottom ;
 	drawrect.left	= wndrect.left + 700;
@@ -719,14 +717,14 @@ void Paint_Grafic(HWND hwnd)
 	for(int yy=0;yy<=cont_timp;yy++)
 		if(timp_maxim<mem_timp[yy])
 			timp_maxim=mem_timp[yy];
-	coeficient=400/(timp_maxim*100)*100*1.3;
+	coeficient=400/(timp_maxim*100)*100*1.6;
 	for(int q=1;q<=cont_timp;q++)
 			DestroyWindow(Grafic[q]);
 	for(int kkk=1;kkk<=cont_timp;kkk++)
 		{sprintf(nume,"Bar %d",kkk);
 			Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
 							WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-							700,(kkk-1)*100+5, 
+							701,(kkk-1)*100+5, 
 							mem_timp[kkk]*coeficient,100,
 							hwnd, NULL,
 							hInst, NULL );
