@@ -730,10 +730,10 @@ void Paint_Grafic(HWND hwnd)
 			DestroyWindow(Grafic[q]);
 	for(int kkk=1;kkk<cont_timp;kkk++)
 	{	sprintf(nume,"Bar %d",kkk);
-			Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
+		Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
-						701,(kkk-1)*100+5, //701,(kkk-1)*100+5,
-						mem_timp[kkk]*coeficient,100,//100,100,
+						701,(kkk-1)*100+5,//701,(kkk-1)*100+5, 
+						100,100,//mem_timp[kkk]*coeficient,100,
 						hwnd, NULL,
 					hInst, NULL );
 	}
@@ -755,12 +755,29 @@ void desenare(HDC hdc)
 }
 void DisplayBar(HDC hdc)
 {
-	int jj,jjj;
-	for( jj=801;jj</*mem_timp[kkk]*coeficient+*/999;jj++)
-					for( jjj=0;jjj<100;jjj++)
+	float coeficient=0;
+	float timp_maxim=0;
+	for(int yy=0;yy<=cont_timp;yy++)
+		if(timp_maxim<mem_timp[yy])
+			timp_maxim=mem_timp[yy];
+	coeficient=400/(timp_maxim*100)*100*1.6;
+	int jj,jjj,yyy;
+	jjj=0;
+	yyy=jjj+100;
+	for(int kkk=1;kkk<cont_timp;kkk++)
+	{
+	
+		for( jj=801;jj<mem_timp[kkk]*coeficient+701;jj++)
+		{
+					for( jjj;jjj<yyy;jjj++)
 					{
 						Sleep(0.2);
 						SetPixel(hdc, jj, jjj, RGB(rand()%255,55,5));
 					}
+		jjj=yyy-100;
+		}
+		
+
+	}
 
 }
