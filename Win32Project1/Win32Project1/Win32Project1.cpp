@@ -18,7 +18,7 @@ char szFileName[MAX_PATH] = "";
 void desenare(HDC hdc);
 int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
-float mem_timp[7];
+float mem_timp[6];
 int cont_timp=1;
 void Paint(HWND hwnd);
 clock_t begin,end;
@@ -28,7 +28,6 @@ enum EMode
 {
 	eDisplayBar,
 	eDisplayBUTTON,
-	eDisplayFilled,
 	eDisplayPixels,
 	out
 };
@@ -36,6 +35,7 @@ enum EMode
 // Global variable for current mode
 EMode gMode=out;
 void DisplayBar(HDC hdc);
+void DisplayText(HDC hdc);
 HWND  hWnd;
 
 HWND Grafic[10];
@@ -460,7 +460,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 //}
 void timp_edmonds_carp(HWND hWnd)
 {
-	if(cont_timp<=7)
+	if(cont_timp<7)
 	{
 	Edmonds_Karp(hWnd);
 	//MessageBox(hWnd,"1","check",MB_OK);
@@ -472,7 +472,7 @@ void timp_edmonds_carp(HWND hWnd)
 	MessageBox(hWnd,timp,"TIMP",MB_OK);
 	}
 	else
-		MessageBox(hWnd,"Ati depasit numarul maxim de 7 comparatii\nApasati reinitializare","Warning",MB_OK);
+		MessageBox(hWnd,"Ati depasit numarul maxim de 6 comparatii\nApasati reinitializare","Warning",MB_OK);
 	//sprintf(timp,"%s",time_spent);
 	//MessageBox(hWnd,"3","check",MB_OK);
 	//	MessageBox(hWnd,timp,"Timp",MB_OK);
@@ -622,7 +622,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			 desenare(hdc);
 			InvalidateRect(hWnd,NULL,TRUE);
 		break;
-				
+					
 		case WM_PAINT:
 				hdc=BeginPaint(hWnd,&ps);
 			//	GetClientRect(hWnd,&rect);
@@ -665,7 +665,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 		case WM_ACTIVATE:
 			Paint(hWnd);
-			break;
+		break;
 		case WM_DESTROY:
 				PostQuitMessage(0);
 			break;
@@ -695,6 +695,8 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 }
 void Paint(HWND hwnd)
 {
+	HDC hdc=GetDC(hwnd);
+	DisplayText(hDC);
 	RECT wndrect;
 	GetClientRect(hwnd,&wndrect);
 	drawrect.bottom = wndrect.bottom ;
@@ -745,7 +747,7 @@ void Paint_Grafic(HWND hwnd)
 }
 void desenare(HDC hdc)
 {	
-	
+	 DisplayText(hDC);
 	switch(gMode)
 	{
 	case eDisplayBUTTON:
@@ -788,4 +790,43 @@ void DisplayBar(HDC hdc)
 		yyy=yyy+100;
 	}
 
+}
+
+void DisplayText(HDC hdc)
+{
+	char buf[2048];
+
+	int x=180;
+	int y=60;
+
+	int len=sprintf(buf,"Hello World!");
+	TextOut(hdc,x,y,buf,len);
+
+	y+=50;
+	len=sprintf(buf,"The above test was displayed using the GDI function: TextOut");
+	TextOut(hdc,x,y,buf,len);
+
+	y+=20;
+	len=sprintf(buf,"The code is TextOut(hdc,50,50,""Hello World"",12)");
+	TextOut(hdc,x,y,buf,len);
+
+	SetTextColor(hdc,RGB(rand()%255,rand()%255,rand()%255));
+
+	y+=20;
+	len=sprintf(buf,"You can also change the colour of the text");
+	TextOut(hdc,x,y,buf,len);
+
+	SetTextColor(hdc,RGB(0,0,255));
+
+	y+=20;
+	len=sprintf(buf,"Using the SetTextColour function");
+	TextOut(hdc,x,y,buf,len);
+
+	SetTextColor(hdc,RGB(0,0,0));
+
+	y+=20;
+	len=sprintf(buf,"MARIUS Sava & MIHAI Florea");
+	TextOut(hdc,x,y,buf,len);
+	
+	
 }
