@@ -464,13 +464,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 //  WM_PAINT	- Paint the main window
 //  WM_DESTROY	- post a quit message and return
 //////////////////////////////////////////////////////////////////////////
-//void functie()
-//{char szFileName[MAX_PATH];
-//	HWND hwnd;
-//GetModuleFileName(hInstance, szFileName, MAX_PATH);
-//MessageBox(hwnd, szFileName, "This program is:", MB_OK | MB_ICONINFORMATION);
-//
-//}
+
 void timp_edmonds_carp(HWND hWnd)
 {
 	if(cont_timp<7)
