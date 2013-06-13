@@ -38,11 +38,25 @@ float mem_timp[6];
 int cont_timp=1;
 int mem_flux[10];
 
+
+
 void Paint(HWND hwnd);
 
 clock_t begin,end;
 int time_spent;
 float tmp;
+int contor_noduri=0;
+struct poz_buton{
+
+float up_x;
+float start_x;
+float up_y;
+float start_y;
+int id;
+};
+poz_buton vector_poz[500];
+
+
 enum EMode
 {
 	eDisplayBar,
@@ -540,7 +554,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				
 		p1.x=LOWORD(lParam);
 		p1.y=HIWORD(lParam);
+		contor_noduri++;
 		
+		
+		
+		vector_poz[contor_noduri].up_x=p1.x;
+		vector_poz[contor_noduri].up_y=p1.y;
+		vector_poz[contor_noduri].start_x=p1.x+20;
+		vector_poz[contor_noduri].start_y=p1.y+10;
+		vector_poz[contor_noduri].id=contor_noduri;
 		if (p1.x<690 && p1.x>10 && p1.y>240 && p1.y<675)
 				{
 
@@ -548,7 +570,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
 				p1.x,p1.y, 
 				20,20,
-				hWnd, NULL,
+				hWnd,(HMENU) 50+contor_noduri,
 				hInst, NULL );
 		hdc=GetDC(hWnd); //Obtinerea contextului grafic
 	//	Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
@@ -613,7 +635,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			case WM_COMMAND:
 				wmId    = LOWORD(wParam);
 				wmEvent = HIWORD(wParam);
-			
+			char a[10];
+			sprintf(a,"%d",wmId);
+			MessageBox(hWnd,a,"s",MB_OK);
 			// Parse the menu selections:
 			switch (wmId)
 			{
