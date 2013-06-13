@@ -16,11 +16,15 @@
 #include<cstring>
 char szFileName[MAX_PATH] = "";
 void desenare(HDC hdc);
+
 int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
 float mem_timp[6];
 int cont_timp=1;
+int mem_flux[10],mem_nr_noduri[10];
+
 void Paint(HWND hwnd);
+
 clock_t begin,end;
 int time_spent;
 float tmp;
@@ -195,13 +199,14 @@ void rand_list(HWND hdlg)
 	fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 	fon.lpstrDefExt =TEXT("txt");
 	GetOpenFileName(&fon);
-//	MessageBox(hdlg,"1","bn",MB_OK);
+
 	 FILE*in=fopen(szFileName,"w");
 	fprintf(in," ");
 	int bState;
-	//MessageBox(hdlg,"2","bn",MB_OK);
+	
 	int nr_noduri1=(int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
-	//MessageBox(hdlg,"3","bn",MB_OK);
+	mem_nr_noduri[cont_timp]=nr_noduri1;
+	
 	 int nr_muchii=0;
 	 for(int q=1;q<=nr_noduri1;q++)
 		for(int q1=1;q1<=nr_noduri1;q1++)
@@ -210,10 +215,9 @@ void rand_list(HWND hdlg)
 				rand_cap[q][q1]=rand()%30;nr_muchii++;}
 			else 
 				rand_cap[q][q1]=0;
-		//	MessageBox(hdlg,"4","bn",MB_OK);
+		
 			fprintf(in,"%d %d \n ",nr_noduri1,nr_muchii);
-			//	MessageBox(hdlg,"5","bn",MB_OK);
-			for(int q=1;q<=nr_noduri1;q++)
+		    for(int q=1;q<=nr_noduri1;q++)
 			   for(int q1=1;q1<=nr_noduri1;q1++)
 	               if(q1>q)   
 					 fprintf(in,"%d %d %d \n",q,q1,rand_cap[q][q1]);
@@ -223,7 +227,7 @@ void rand_list(HWND hdlg)
 void creare_de_la_tast(HWND hdlg)
 {
 	int bState;
-	//printf(" nodul 1,nodul 2, capacitatea");
+	
 	nod1= (int)GetDlgItemInt(hdlg,IDC_EDIT1,&bState,true);
 	nod2= (int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
 	 cap=(int)GetDlgItemInt(hdlg,IDC_EDIT3,&bState,true);
@@ -272,15 +276,23 @@ void reinitializare(char*fisier,HWND hdlg)
 	fprintf(f," ");
 	fclose(f);
 
-//	de incercat ce provoaca crashul------------
-//nod_dest=NULL,nr_noduri=NULL;
-//nod1=NULL,nod2=NULL,cap=NULL,poz=0;
-//
-// graf[1001]=NULL,v=NULL,q=NULL,aux=NULL; // graful memorat  ca vectori de liste si variabile auxiliare
-//tata[1001]=NULL,n=NULL,mm=NULL,flow=NULL; //m=nr de muchii   n= valoarea nodului tinta
-// ok=NULL,viz[1001]=NULL;
-//
-//
+//	///////////de incercat ce provoaca crashul------------
+nod_dest=NULL,nr_noduri=NULL;
+nod1=NULL,nod2=NULL,cap=NULL,poz=0;
+
+ graf[1001]=NULL,v=NULL,q=NULL,aux=NULL; // graful memorat  ca vectori de liste si variabile auxiliare
+tata[1001]=NULL,n=NULL,mm=NULL,flow=NULL; //m=nr de muchii   n= valoarea nodului tinta
+ ok=NULL;
+  time_spent=0;
+ tmp=0;
+ /////////////
+ for(int q=1;q<=cont_timp;q++)
+			DestroyWindow(Grafic[q]);
+ 
+legaturi[MAX_PATH][3]=NULL;
+mem_timp[6]=NULL;
+ cont_timp=1;
+
 }
 // sfarsitul codului
 //Procedurile de fereastră a casetelor de dialog
@@ -388,6 +400,7 @@ BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam
 		}
 	return FALSE;
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //sfarsit proceduri
 
@@ -464,11 +477,12 @@ void timp_edmonds_carp(HWND hWnd)
 	{
 	Edmonds_Karp(hWnd);
 	//MessageBox(hWnd,"1","check",MB_OK);
-	char timp[10];
+	char timp[100];
 	tmp=(float)(end-begin)/CLOCKS_PER_SEC;
+	mem_flux[cont_timp]=flow;
 	mem_timp[cont_timp]=tmp;
 	cont_timp++;
-	sprintf(timp,"%f ",tmp);
+	sprintf(timp,"%.16f ",tmp);
 	MessageBox(hWnd,timp,"TIMP",MB_OK);
 	}
 	else
@@ -582,7 +596,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				case 9:
 					reinitializare(szFileName,hWnd);
-					
 				break;
 				case 7:
 				 if (szFileName)
@@ -611,7 +624,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				case 25:
 					gMode=eDisplayBUTTON;
-					
 				break;
 				default:
 					return DefWindowProc(hWnd, message, wParam, lParam);
@@ -739,8 +751,8 @@ void Paint_Grafic(HWND hwnd)
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
 						701,(kkk-1)*100+5,//701,(kkk-1)*100+5, 
 						100,100,//mem_timp[kkk]*coeficient,100,
-						hwnd, NULL,
-					hInst, NULL );
+						hwnd,(HMENU)kkk+50,
+				    	hInst, NULL );
 	}
 	
 	
