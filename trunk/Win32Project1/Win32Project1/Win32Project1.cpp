@@ -11,7 +11,7 @@
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
-
+#define icon
 
 
 #define _CRT_SECURE_NO_DEPRECATE
@@ -28,6 +28,7 @@
 #include<time.h>
 #include<fstream>
 #include<cstring>
+
 char szFileName[MAX_PATH] = "";
 void desenare(HDC hdc);
 
@@ -447,7 +448,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 	wc.lpszClassName	= szWindowClass;
 	wc.hIcon			= LoadIcon(NULL,IDI_SHIELD);// imi incarca un bmp in stanga sus ca iconita
 	wc.hCursor			= LoadCursor(NULL, IDC_HAND);
-	wc.hbrBackground	= (HBRUSH)(COLOR_WINDOW+2);
+	wc.hbrBackground	=( HBRUSH)(COLOR_WINDOW+2);
 	wc.lpszMenuName = NULL;
 	RegisterClass(&wc);
 	hInst = hInstance; // Store instance handle in our global variable
@@ -611,6 +612,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			case WM_COMMAND:
 				wmId    = LOWORD(wParam);
 				wmEvent = HIWORD(wParam);
+			
 			// Parse the menu selections:
 			switch (wmId)
 			{
@@ -635,6 +637,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				case 25:
 					gMode=eDisplayBUTTON;
 				break;
+				case 201:
+					MessageBox(hWnd,"SADAS","1",MB_OK);
+					break;
+					case 202:
+					MessageBox(hWnd,"SADAS","2",MB_OK);
+					break;
+					case 203:
+					MessageBox(hWnd,"SADAS","3",MB_OK);
+					break;
+					case 204:
+					MessageBox(hWnd,"SADAS","4",MB_OK);
+					break;
+					case 205:
+					MessageBox(hWnd,"SADAS","5",MB_OK);
+					break;
+					case 206:
+					MessageBox(hWnd,"SADAS","6",MB_OK);
+					break;
 				default:
 					return DefWindowProc(hWnd, message, wParam, lParam);
 				}
