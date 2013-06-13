@@ -31,12 +31,12 @@
 
 char szFileName[MAX_PATH] = "";
 void desenare(HDC hdc);
-
+char mesaj[100];
 int nod_dest,nr_noduri;
 int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
 float mem_timp[6];
 int cont_timp=1;
-int mem_flux[10],mem_nr_noduri[10];
+int mem_flux[10];
 
 void Paint(HWND hwnd);
 
@@ -180,6 +180,7 @@ void Edmonds_Karp(HWND hdlg)
 
 	begin=clock();
 	int ii,x,c,y; fscanf(in,"%d%d",&n,&mm);
+
 	for (ii=1; ii<=mm; ++ii) 
 	{
 		fscanf(in,"%d%d%d",&x,&y,&c); cost[x][y]=c;
@@ -226,7 +227,7 @@ void rand_list(HWND hdlg)
 	int bState;
 	
 	int nr_noduri1=(int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
-	mem_nr_noduri[cont_timp]=nr_noduri1;
+	
 	
 	 int nr_muchii=0;
 	 for(int q=1;q<=nr_noduri1;q++)
@@ -638,22 +639,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					gMode=eDisplayBUTTON;
 				break;
 				case 201:
-					MessageBox(hWnd,"SADAS","1",MB_OK);
+					
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[1],mem_timp[1]);
+					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
+
 					break;
 					case 202:
-					MessageBox(hWnd,"SADAS","2",MB_OK);
+					//char mesaj[100];
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[2],mem_timp[2]);
+					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
+
 					break;
 					case 203:
-					MessageBox(hWnd,"SADAS","3",MB_OK);
+					//char mesaj[100];
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[3],mem_timp[3]);
+					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
+
 					break;
 					case 204:
-					MessageBox(hWnd,"SADAS","4",MB_OK);
+					//char mesaj[100];
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[4],mem_timp[4]);
+					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
+
 					break;
 					case 205:
-					MessageBox(hWnd,"SADAS","5",MB_OK);
+					//char mesaj[100];
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[5],mem_timp[5]);
+					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
+
 					break;
 					case 206:
-					MessageBox(hWnd,"SADAS","6",MB_OK);
+					//char mesaj[100];
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[6],mem_timp[6]);
+					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
+
 					break;
 				default:
 					return DefWindowProc(hWnd, message, wParam, lParam);
