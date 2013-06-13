@@ -36,6 +36,7 @@ enum EMode
 	out
 };
 
+
 // Global variable for current mode
 EMode gMode=out;
 void DisplayBar(HDC hdc);
