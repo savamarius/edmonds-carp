@@ -139,10 +139,12 @@ void bfs()
       v=v->next;
      }
 }
-          
+          int verificare=0;
 //functie cu citirea din fisier
 void Edmonds_Karp(HWND hdlg)
 {
+  
+	
 	HDC hdc;
 	OPENFILENAME fon;
 	hdc=GetDC(hdlg);
@@ -154,10 +156,12 @@ void Edmonds_Karp(HWND hdlg)
 	fon.nMaxFile = MAX_PATH;
 	fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 	fon.lpstrDefExt =TEXT("txt");
-	GetOpenFileName(&fon);
+	if(GetOpenFileName(&fon)){
+	
 	FILE*in=fopen(szFileName,"r+");
-		//  FILE*in=fopen("in.txt","r");
- // FILE* out=fopen("out.txt","r+");
+	
+
+
 	begin=clock();
 	int ii,x,c,y; fscanf(in,"%d%d",&n,&mm);
 	for (ii=1; ii<=mm; ++ii) 
@@ -179,7 +183,8 @@ void Edmonds_Karp(HWND hdlg)
 		 char msg[30];   
 		 sprintf(msg," fluxul maxim este %d  \n",flow);
 		 MessageBox(hdlg,msg,"Success",MB_OK);
-		 fclose(in);
+		verificare=1;
+		 fclose(in);}
 }
 
 /////////////
@@ -198,8 +203,8 @@ void rand_list(HWND hdlg)
 	fon.nMaxFile = MAX_PATH;
 	fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 	fon.lpstrDefExt =TEXT("txt");
-	GetOpenFileName(&fon);
-
+	if(GetOpenFileName(&fon))
+	{
 	 FILE*in=fopen(szFileName,"w");
 	fprintf(in," ");
 	int bState;
@@ -222,6 +227,7 @@ void rand_list(HWND hdlg)
 	               if(q1>q)   
 					 fprintf(in,"%d %d %d \n",q,q1,rand_cap[q][q1]);
 	fclose(in);
+    }
 }
 //functie creare graf de la tastatura
 void creare_de_la_tast(HWND hdlg)
@@ -251,12 +257,14 @@ void scriere_doc(HWND hdlg)
 	fon.nMaxFile = MAX_PATH;
 	fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 	fon.lpstrDefExt =TEXT("txt");
-	GetOpenFileName(&fon);
+	if(GetOpenFileName(&fon))
+	{
 	FILE*f=fopen(szFileName,"r+");
 	fprintf(f,"%d %d \n",nod_dest,nr_noduri);
 	for (int ii=0;ii<poz;ii++)
 		fprintf(f,"%d %d %d\n",legaturi[ii][0],legaturi[ii][1],legaturi[ii][2]);
-}
+	}
+	}
 
 void reinitializare(char*fisier,HWND hdlg)
 {
@@ -271,12 +279,13 @@ void reinitializare(char*fisier,HWND hdlg)
 	fon.nMaxFile = MAX_PATH;
 	fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 	fon.lpstrDefExt =TEXT("txt");
-	GetOpenFileName(&fon);
+	if(GetOpenFileName(&fon))
+	{
 	FILE*f=fopen(szFileName,"w");
 	fprintf(f," ");
 	fclose(f);
+	}
 
-//	///////////de incercat ce provoaca crashul------------
 nod_dest=NULL,nr_noduri=NULL;
 nod1=NULL,nod2=NULL,cap=NULL,poz=0;
 
@@ -471,13 +480,21 @@ void timp_edmonds_carp(HWND hWnd)
 	{
 	Edmonds_Karp(hWnd);
 	//MessageBox(hWnd,"1","check",MB_OK);
+	if (verificare){
 	char timp[100];
+
 	tmp=(float)(end-begin)/CLOCKS_PER_SEC;
 	mem_flux[cont_timp]=flow;
 	mem_timp[cont_timp]=tmp;
+		if (verificare){
 	cont_timp++;
 	sprintf(timp,"%.16f ",tmp);
 	MessageBox(hWnd,timp,"TIMP",MB_OK);
+	verificare=0;
+		}
+	
+	}
+	
 	}
 	else
 		MessageBox(hWnd,"Ati depasit numarul maxim de 6 comparatii\nApasati reinitializare","Warning",MB_OK);
@@ -590,22 +607,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				case 9:
 					reinitializare(szFileName,hWnd);
-				break;
-				case 7:
-				 if (szFileName)
-				 {
-					char szFileName[MAX_PATH] = "";
-				 }
-				hdc=GetDC(hWnd);
-				ZeroMemory(&fon,sizeof(fon));
-				fon.lStructSize = sizeof(fon);
-				fon.hwndOwner = hWnd;
-				fon.lpstrFilter =TEXT("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
-				fon.lpstrFile =szFileName;
-				fon.nMaxFile = MAX_PATH;
-				fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-				fon.lpstrDefExt =TEXT("txt");
-				GetOpenFileName(&fon);
 				break;
 				case 8:
 					pCREARETASTATURA(hWnd);//functie folosita la crearea arborelui de la tastatura
