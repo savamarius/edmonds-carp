@@ -29,14 +29,48 @@
 #include<fstream>
 #include<cstring>
 
+//////////////Functii de masurare tim de executie algoritm
+double PCFreq = 0.0;
+__int64 CounterStart = 0;
+
+void StartCounter()
+{
+    LARGE_INTEGER li;
+   QueryPerformanceFrequency(&li);
+	
+
+    PCFreq = double(li.QuadPart)/1000.0;
+
+    QueryPerformanceCounter(&li);
+    CounterStart = li.QuadPart;
+}
+double GetCounter()
+{
+    LARGE_INTEGER li;
+    QueryPerformanceCounter(&li);
+    return double(li.QuadPart-CounterStart)/PCFreq;
+}
+
+//
+//
+//    StartCounter();   functie de start
+//    
+//    GetCounter();    functie de returneaza timpul trecut de la start
+//    
+//
+
+//////////////////////////
+
+
+ int memorie[6],increment=0;
 char szFileName[MAX_PATH] = "";
 void desenare(HDC hdc);
 char mesaj[100];
 int nod_dest,nr_noduri;
-int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
-float mem_timp[6];
+int nod1,nod2,cap,legaturi[500][3],poz=0;
+float mem_timp[10];
 int cont_timp=1;
-int mem_flux[10];
+int mem_flux[10],mem_noduri[10];
 int j=0;	
 int id1=0,id2=0,contor_pozitii=0;
 HWND graf_nod[200];
@@ -110,6 +144,8 @@ int verificare_nod(int nod);
 char matr_adiacenta[1000][1000],nr_matr=0;
 void creare_graf_mod_grafic();
 void validare_graf_func(HWND hdlg);
+
+void demo(HWND hdlg);
 BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
 BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
 BOOL CALLBACK muchii(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
@@ -231,7 +267,9 @@ void Edmonds_Karp(HWND hdlg)
 	
 
 
-	begin=clock();
+	//begin=clock();
+
+	StartCounter();
 	int ii,x,c,y; fscanf(in,"%d%d",&n,&mm);
 
 	for (ii=1; ii<=mm; ++ii) 
@@ -249,7 +287,7 @@ void Edmonds_Karp(HWND hdlg)
 		ok=1;
 		while (ok==1) 
 			bfs();
-		end=clock();
+		tmp=GetCounter();
 		 char msg[30];   
 		 sprintf(msg," fluxul maxim este %d  \n",flow);
 		 MessageBox(hdlg,msg,"Success",MB_OK);
@@ -261,7 +299,7 @@ void Edmonds_Karp(HWND hdlg)
 //functie de crearea aleatoare a matrici de vecini impreuna cu capacitatile lor
 void rand_list(HWND hdlg)
 {
-	int rand_cap[MAX_PATH][MAX_PATH];
+	int rand_cap[401][401];
 	HDC hdc;
 	OPENFILENAME fon;
 	hdc=GetDC(hdlg);
@@ -557,12 +595,13 @@ void timp_edmonds_carp(HWND hWnd)
 	if (verificare){
 	char timp[1000];
 
-	tmp=end-begin;
+	//tmp=end-begin;
 	mem_flux[cont_timp]=flow;
 	mem_timp[cont_timp]=tmp;
+	mem_noduri[cont_timp]=n;
 		if (verificare){
 	cont_timp++;
-	sprintf(timp,"%.350f ",tmp);
+	sprintf(timp,"%f ",tmp);
 	MessageBox(hWnd,timp,"TIMP",MB_OK);
 	verificare=0;
 		}
@@ -583,7 +622,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int id_buton;
 	//RECT  rect = { 110,110, 200, 200};
 	int wmId=0, wmEvent=0;
-	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL,hButton9=NULL;
+	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL,hButton9=NULL,hButton10=NULL;
 	HDC hdc=NULL;
 	PAINTSTRUCT ps;
 	
@@ -698,6 +737,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						130, 25,		
 						hWnd, (HMENU) 44,		
 						hInst, NULL );
+			hButton10 = CreateWindowEx( NULL,"button", "Demonstratie",		
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,		
+							wndrect.left+700, wndrect.top+680,		
+						130, 25,		
+						hWnd, (HMENU) 10,		
+						hInst, NULL );
 		break;
 			case WM_COMMAND:
 				wmId    = LOWORD(wParam);
@@ -734,9 +779,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				reinitializare_matrice();
 				break;
 				case 20:	
+
 					validare_graf_func(hWnd);
 				break;
-						
+				
+				case 10:
+					  demo(hWnd);
+					break;
 				
 				case 14:
 					prand_noduri(hWnd);   //functie ce creaza random nodurile si legaturile dintre ele intr-un graf orientat
@@ -751,7 +800,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					pCREARETASTATURA(hWnd);//functie folosita la crearea arborelui de la tastatura
 				break;
 				case 5:
-					DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+					DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About); 
+					
 				break;
 				case 6:
 					PostQuitMessage(0);
@@ -761,37 +811,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 				case 201:
 					
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[1],mem_timp[1]);
+					sprintf(mesaj," Numarul de noduri este %d .\nFluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %f \n",mem_noduri[1],mem_flux[1],mem_timp[1]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 202:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[2],mem_timp[2]);
+					sprintf(mesaj," Numarul de noduri este %d .\nFluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %f \n",mem_noduri[2],mem_flux[2],mem_timp[2]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 203:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[3],mem_timp[3]);
+					sprintf(mesaj," Numarul de noduri este %d .\nFluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %f \n",mem_noduri[3],mem_flux[3],mem_timp[3]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 204:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[4],mem_timp[4]);
+					sprintf(mesaj," Numarul de noduri este %d .\nFluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %f \n",mem_noduri[4],mem_flux[4],mem_timp[4]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 205:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[5],mem_timp[5]);
+					sprintf(mesaj," Numarul de noduri este %d .\nFluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %f \n",mem_noduri[5],mem_flux[5],mem_timp[5]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 206:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[6],mem_timp[6]);
+					sprintf(mesaj," Numarul de noduri este %d .\nFluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %f \n",mem_noduri[6],mem_flux[6],mem_timp[6]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
@@ -1086,3 +1136,142 @@ void reinitializare_matrice()
 	contor_pozitii=0;
 
 }
+
+int next_nod_valid(int nod){
+	int ok=0;
+	for (int j=0;j<increment;j++)
+		if (nod==memorie[j])
+			ok=1;
+
+	return ok;
+
+
+}
+
+void Edmonds_Karp2()
+{
+  
+	
+	
+	
+	FILE*in=fopen(szFileName,"r+");
+	
+
+
+	//begin=clock();
+
+	StartCounter();
+	int ii,x,c,y; fscanf(in,"%d%d",&n,&mm);
+
+	for (ii=1; ii<=mm; ++ii) 
+	{
+		fscanf(in,"%d%d%d",&x,&y,&c); cost[x][y]=c;
+		v=(celula*)malloc(sizeof(celula));
+		v->nod=y;
+		v->next=graf[x]; 
+		graf[x]=v;
+		v=(celula*)malloc(sizeof(celula));
+		v->nod=x;
+		v->next=graf[y];
+		graf[y]=v;
+	}
+		ok=1;
+		while (ok==1) 
+			bfs();
+		tmp=GetCounter();
+		// char msg[30];   
+		 //sprintf(msg," fluxul maxim este %d  \n",flow);
+		// MessageBox(hdlg,msg,"Success",MB_OK);
+		verificare=1;
+		 fclose(in);
+}
+
+void timp_edmonds_carp2(HWND hWnd)
+{  
+	flow=0;
+	if(cont_timp<7)
+	{
+	Edmonds_Karp2();
+	//MessageBox(hWnd,"1","check",MB_OK);
+	if (verificare){
+	char timp[1000];
+
+	//tmp=end-begin;
+	mem_flux[cont_timp]=flow;
+	mem_timp[cont_timp]=tmp;
+	mem_noduri[cont_timp]=n;
+		if (verificare){
+	cont_timp++;
+	//sprintf(timp,"%f ",tmp);
+	//MessageBox(hWnd,timp,"TIMP",MB_OK);
+	verificare=0;
+		}
+	
+	}
+	
+	}
+	else
+		MessageBox(hWnd,"Ati depasit numarul maxim de 6 comparatii\nApasati reinitializare","Warning",MB_OK);
+	//sprintf(timp,"%s",time_spent);
+	//MessageBox(hWnd,"3","check",MB_OK);
+	//	MessageBox(hWnd,timp,"Timp",MB_OK);
+}
+
+void demo(HWND hdlg)
+{
+   
+	int rand_cap[401][401];
+	HDC hdc;
+	OPENFILENAME fon;
+	hdc=GetDC(hdlg);
+	ZeroMemory(&fon,sizeof(fon));
+	fon.lStructSize = sizeof(fon);
+	fon.hwndOwner = hdlg;
+	fon.lpstrFilter =TEXT("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+	fon.lpstrFile =szFileName;
+	fon.nMaxFile = MAX_PATH;
+	fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	fon.lpstrDefExt =TEXT("txt");
+	if(GetOpenFileName(&fon))
+	{
+	 
+	
+	for (int j=0;j<6;j++){
+		FILE*in=fopen(szFileName,"w");
+	fprintf(in," ");
+	int nr_noduri1=rand()%401;
+	
+
+	while(nr_noduri1<11 && next_nod_valid(nr_noduri1))
+	              nr_noduri1=rand()%401;
+
+	memorie[increment]=nr_noduri;
+	increment++;
+
+	
+	
+	 int nr_muchii=0;
+	 for(int q=1;q<=nr_noduri1;q++)
+		for(int q1=1;q1<=nr_noduri1;q1++)
+			if(q1>q)
+			{
+				rand_cap[q][q1]=rand()%30;nr_muchii++;}
+			else 
+				rand_cap[q][q1]=0;
+		
+			fprintf(in,"%d %d \n ",nr_noduri1,nr_muchii);
+		    for(int q=1;q<=nr_noduri1;q++)
+			   for(int q1=1;q1<=nr_noduri1;q1++)
+	               if(q1>q)   
+					   fprintf(in,"%d %d %d \n",q,q1,rand_cap[q][q1]);
+	
+	fclose(in);
+	timp_edmonds_carp2(hWnd);
+	}
+	
+    }
+}
+
+
+
+
