@@ -557,7 +557,7 @@ void timp_edmonds_carp(HWND hWnd)
 	if (verificare){
 	char timp[1000];
 
-	tmp=(float)(end-begin)/CLOCKS_PER_SEC;
+	tmp=end-begin;
 	mem_flux[cont_timp]=flow;
 	mem_timp[cont_timp]=tmp;
 		if (verificare){
