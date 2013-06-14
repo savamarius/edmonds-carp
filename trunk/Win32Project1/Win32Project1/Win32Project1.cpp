@@ -333,7 +333,9 @@ void scriere_doc(HWND hdlg)
 	fprintf(f,"%d %d \n",nod_dest,nr_noduri);
 	for (int ii=0;ii<poz;ii++)
 		fprintf(f,"%d %d %d\n",legaturi[ii][0],legaturi[ii][1],legaturi[ii][2]);
+	fclose(f);
 	}
+	
 	}
 
 void reinitializare(char*fisier,HWND hdlg)
@@ -546,7 +548,8 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 //////////////////////////////////////////////////////////////////////////
 
 void timp_edmonds_carp(HWND hWnd)
-{
+{  
+	flow=0;
 	if(cont_timp<7)
 	{
 	Edmonds_Karp(hWnd);
@@ -603,7 +606,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		
 		char a[10];		
 		sprintf(a,"%d",contor_noduri);
-		if (p1.x<690 && p1.x>10 && p1.y>240 && p1.y<675 && verificare_vecini_nod[p1.x][p1.y]==0)
+		if (p1.x<690 && p1.x>10 && p1.y>240 && p1.y<650 && verificare_vecini_nod[p1.x][p1.y]==0)
 				{
 			graf_nod[contor_noduri]= CreateWindowEx( NULL,"button", a ,
 				WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
@@ -733,8 +736,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				case 20:	
 					validare_graf_func(hWnd);
 				break;
-					validare_graf_func(hWnd);	
-				break;
+						
+				
 				case 14:
 					prand_noduri(hWnd);   //functie ce creaza random nodurile si legaturile dintre ele intr-un graf orientat
 				break;
@@ -1057,7 +1060,7 @@ int verificare_nod(int nod)
 		fclose(g);		
 			
 		FILE*f=fopen(szFileName,"a");		
-		fprintf(f,"%d %d\n",contor_noduri,contor_pozitii);		
+		fprintf(f,"%d %d\n",contor_noduri-1,contor_pozitii);		
 			
 		for (int j=0;j<contor_pozitii;j++)		
 			fprintf(f,"%d %d %d \n",muchii_coordonate[j].buton1-500,muchii_coordonate[j].buton2-500,muchii_coordonate[j].capacitate);		
