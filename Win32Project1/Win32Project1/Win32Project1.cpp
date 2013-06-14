@@ -39,7 +39,7 @@ int cont_timp=1;
 int mem_flux[10];
 int j=0;	
 int id1=0,id2=0,contor_pozitii=0;
-
+HWND graf_nod[200];
 void Paint(HWND hwnd);
 
 clock_t begin,end;
@@ -583,7 +583,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL,hButton9=NULL;
 	HDC hdc=NULL;
 	PAINTSTRUCT ps;
-	HWND graf[200];
+	
 	HBRUSH      brLogBrush;
 	 LOGBRUSH    LogBrush;
 	OPENFILENAME fon;
@@ -600,30 +600,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		 id_buton=contor_noduri+500;
 		
 		
-		vector_poz[contor_noduri].up_x=p1.x;
-		vector_poz[contor_noduri].up_y=p1.y;
-		vector_poz[contor_noduri].start_x=p1.x+20;
-		vector_poz[contor_noduri].start_y=p1.y+10;
-		vector_poz[contor_noduri].id=contor_noduri+500;
+		
 		char a[10];		
 		sprintf(a,"%d",contor_noduri);
-		if ((p1.x<690 && p1.x>10 && p1.y>240 && p1.y<675)&&(verificare_vecini_nod[p1.x][p1.y]==0))
+		if (p1.x<690 && p1.x>10 && p1.y>240 && p1.y<675 && verificare_vecini_nod[p1.x][p1.y]==0)
 				{
-			graf[contor_noduri]= CreateWindowEx( NULL,"button", a ,
+			graf_nod[contor_noduri]= CreateWindowEx( NULL,"button", a ,
 				WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
 				p1.x,p1.y, 
 				20,20,
 				hWnd,(HMENU) id_buton,
 				hInst, NULL );
-			contor_noduri++;
+			
 			verificare_vecini_nod[p1.x][p1.y]=1;
-			f=p1.x-20;
-			g=p1.y-20;
-			for(f;f<p1.x+40;f++)
-				for(g;g<p1.y+40;g++)
+			//f=p1.x-20;
+			//g=p1.y-20;
+			for(f=p1.x-40;f<p1.x+40;f++)
+				for(g=p1.y-40;g<p1.y+40;g++)
 					verificare_vecini_nod[f][g]=1;
-
-
+			vector_poz[contor_noduri].up_x=p1.x;
+		vector_poz[contor_noduri].up_y=p1.y;
+		vector_poz[contor_noduri].start_x=p1.x+20;
+		vector_poz[contor_noduri].start_y=p1.y+10;
+		vector_poz[contor_noduri].id=contor_noduri+500;
+		contor_noduri++;
 		hdc=GetDC(hWnd); //Obtinerea contextului grafic
 	//	Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
 	//	MoveToEx(hdc,p2.x,p2.y,NULL);
@@ -724,9 +724,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			switch (wmId)
 			{
 			case 44:
-
+				reinitializare_matrice();
+				break;
 				case 20:	
-					reinitializare_matrice();
+					validare_graf_func(hWnd);
 				break;
 					validare_graf_func(hWnd);	
 				break;
@@ -1070,4 +1071,11 @@ void reinitializare_matrice()
 	for(alpha=10;alpha<700;alpha++)
 		for(beta=240;beta<700;beta++)
 			verificare_vecini_nod[alpha][beta]=0;
+
+	for (int j4=1;j4<contor_noduri;j4++)
+	    DestroyWindow(graf_nod[j4]);
+
+	contor_noduri=1;
+	//contor_pozitii=0;
+
 }
