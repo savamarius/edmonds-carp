@@ -37,7 +37,7 @@ int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
 float mem_timp[6];
 int cont_timp=1;
 int mem_flux[10];
-int alabala=0;
+int j=0;
 int id1=0,id2=0,contor_pozitii=0;
 
 void Paint(HWND hwnd);
@@ -58,7 +58,6 @@ int id;
 poz_buton vector_poz[500];
 
 struct muchie{
-
 	int buton1;
 	int buton2;
 	int capacitate;
@@ -72,6 +71,7 @@ enum EMode
 	eDisplayBar,
 	eDisplayBUTTON,
 	eDisplayPixels,
+	eDisplayLinie,
 	out
 };
 
@@ -232,9 +232,6 @@ void Edmonds_Karp(HWND hdlg)
 	if(GetOpenFileName(&fon)){
 	
 	FILE*in=fopen(szFileName,"r+");
-	
-
-
 	begin=clock();
 	int ii,x,c,y; fscanf(in,"%d%d",&n,&mm);
 
@@ -625,8 +622,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//p2=p1;
 		ReleaseDC(hWnd,hdc); }//Eliberarea contextului grafic
 		return 0;
-		
-	
 		case WM_CREATE:
 			GetClientRect(hWnd,&wndrect);	
 			hButton2 = CreateWindowEx( NULL,"button", "Random",
@@ -686,15 +681,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (id1==0)
 					id1=wmId;
 				else id2=wmId;
-
-				
-			
 				if (id1 && id2)
 				{
 					muchii_coordonate[contor_pozitii].buton1=id1;
 				    muchii_coordonate[contor_pozitii].buton2=id2;
 					pcapacitate_muchie(hWnd);
-					
 					contor_pozitii++;
 					
 				}
@@ -706,8 +697,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Parse the menu selections:
 				//hdc=GetDC(hWnd);
 				if (id1 && id2){
-				creare_graf_mod_grafic();
-				id1=0;id2=0;}
+				id1=0;id2=0;
+				gMode=eDisplayLinie;
+				InvalidateRect(hWnd,NULL,TRUE);
+				}
 
 			switch (wmId)
 			{
@@ -735,7 +728,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					gMode=eDisplayBUTTON;
 				break;
 				case 201:
-					
 					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[1],mem_timp[1]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
@@ -776,7 +768,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Force a redraw when a key is pressed
 		case WM_KEYDOWN:
 			gMode=eDisplayBUTTON;
-			 desenare(hdc);
+			desenare(hdc);
 			InvalidateRect(hWnd,NULL,TRUE);
 		break;
 					
@@ -815,10 +807,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				////////////////////////////////////////////////////////
 				
 			//	hdc=GetDC(hWnd);
-			//	if(alabala<contor_pozitii){
-			//	MoveToEx( hdc,  vector_poz[muchii_coordonate[alabala].buton1-500].start_x,vector_poz[muchii_coordonate[alabala].buton1-500].start_y, NULL);
-			//		LineTo( hdc, vector_poz[muchii_coordonate[alabala].buton2-500].start_x, vector_poz[muchii_coordonate[alabala].buton2-500].start_y);
-			//	alabala++;
+			//	if(j<contor_pozitii){
+			//	MoveToEx( hdc,  vector_poz[muchii_coordonate[j].buton1-500].start_x,vector_poz[muchii_coordonate[j].buton1-500].start_y, NULL);
+			//		LineTo( hdc, vector_poz[muchii_coordonate[j].buton2-500].start_x, vector_poz[muchii_coordonate[j].buton2-500].start_y);
+			//	j++;
 			//	
 			//	
 			//	//UpdateWindow(hWnd);
@@ -827,7 +819,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			//  }
 			//	else
 			//	{
-			//		alabala=0;
+			//		j=0;
 			//	
 			//	}
 
@@ -837,7 +829,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				////////////////////////////////////////////////////////
 				DeleteObject(brLogBrush);
 				desenare(hdc);
-				
 				EndPaint(hWnd,&ps);
 				
 				
@@ -935,14 +926,16 @@ void desenare(HDC hdc)
 		{
 		Paint_Grafic(hWnd);
 		gMode=eDisplayBar;}
-		
 	case eDisplayBar:
+		{
 		DisplayBar(hdc);
+		gMode=eDisplayLinie;}
+	case eDisplayLinie:
+		creare_graf_mod_grafic();
 		break;
 	default: return;
 	}
 	
-
 }
 void DisplayBar(HDC hdc)
 {
@@ -972,7 +965,6 @@ void DisplayBar(HDC hdc)
 	}
 
 }
-
 void DisplayText(HDC hdc)
 {
 	char buf[2048];
@@ -1011,37 +1003,20 @@ void DisplayText(HDC hdc)
 	
 	
 }
-
 void creare_graf_mod_grafic()
 {
 	PAINTSTRUCT ps;
 	HDC hdc;HPEN pen;
-	
-
-		
-			 // hdc=BeginPaint(hWnd,&ps);
 			  hdc=GetDC(hWnd);
 			  pen = CreatePen(PS_SOLID,2,RGB(0,0,255));
 			  SelectObject(hdc,pen);
-			/*for (int j=0;j<contor_pozitii;j++)
+			for (int j=0;j<contor_pozitii;j++)
 			{
+				MoveToEx( hdc,  vector_poz[muchii_coordonate[j].buton1-500].start_x,vector_poz[muchii_coordonate[j].buton1-500].start_y, NULL);
+					LineTo( hdc, vector_poz[muchii_coordonate[j].buton2-500].start_x, vector_poz[muchii_coordonate[j].buton2-500].start_y);
 				
-			}*/
-			  if(alabala<contor_pozitii){
-				MoveToEx( hdc,  vector_poz[muchii_coordonate[alabala].buton1-500].start_x,vector_poz[muchii_coordonate[alabala].buton1-500].start_y, NULL);
-					LineTo( hdc, vector_poz[muchii_coordonate[alabala].buton2-500].start_x, vector_poz[muchii_coordonate[alabala].buton2-500].start_y);
-				alabala++;
-			  }
-				else
-				{
-					alabala=0;
-				
-				}
-				
-			//EndPaint(hWnd,&ps);
-			
-			
-		
+		}
+
 }
 
 
