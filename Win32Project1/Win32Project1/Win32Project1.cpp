@@ -710,6 +710,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					contor_pozitii++;		
 		
 					}		
+				if(verificare_nod(id1)==0)
+					id1=0;
+				if(verificare_nod(id2)==0)
+					id2=0;
 		
 			/*char a[200];		
 					sprintf(a,"id1=%d  \n id2=%d  ",muchii_coordonate[contor_pozitii].buton1,vector_poz[muchii_coordonate[contor_pozitii].buton1-500].start_x);		
@@ -794,6 +798,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Force a redraw when a key is pressed
 		case WM_KEYDOWN:
 			gMode=eDisplayBUTTON;
+			
 			 desenare(hdc);
 			InvalidateRect(hWnd,NULL,TRUE);
 		break;
@@ -835,9 +840,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				desenare(hdc);
 				creare_graf_mod_grafic();
 				EndPaint(hWnd,&ps);
-				
-				
-			//////////////////pentru desenare
+		//////////////////pentru desenare
 				break;
 		case WM_ACTIVATE:
 			Paint(hWnd);
@@ -1010,7 +1013,7 @@ void DisplayText(HDC hdc)
 void creare_graf_mod_grafic()		
 	{		
 	PAINTSTRUCT ps;		
-		HDC hdc;HPEN pen;		
+	HDC hdc;HPEN pen;		
 				  hdc=GetDC(hWnd);		
 			  pen = CreatePen(PS_SOLID,2,RGB(0,0,255));		
 				  SelectObject(hdc,pen);		
@@ -1076,6 +1079,7 @@ void reinitializare_matrice()
 	    DestroyWindow(graf_nod[j4]);
 
 	contor_noduri=1;
-	//contor_pozitii=0;
+	InvalidateRect(hWnd,NULL,TRUE);	
+	contor_pozitii=0;
 
 }
