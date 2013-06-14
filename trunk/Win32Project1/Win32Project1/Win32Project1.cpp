@@ -108,7 +108,11 @@ HINSTANCE hInst;
 RECT		drawrect,wndrect;
 HDC			hDC;
 
+
+int verificare_nod(int nod);
 char matr_adiacenta[1000][1000],nr_matr=0;
+
+void validare_graf_func(HWND hdlg);
 void creare_graf_mod_grafic();
 BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
 BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
@@ -552,14 +556,14 @@ void timp_edmonds_carp(HWND hWnd)
 	Edmonds_Karp(hWnd);
 	//MessageBox(hWnd,"1","check",MB_OK);
 	if (verificare){
-	char timp[100];
+	char timp[1000];
 
 	tmp=(float)(end-begin)/CLOCKS_PER_SEC;
 	mem_flux[cont_timp]=flow;
 	mem_timp[cont_timp]=tmp;
 		if (verificare){
 	cont_timp++;
-	sprintf(timp,"%.16f ",tmp);
+	sprintf(timp,"%.350f ",tmp);
 	MessageBox(hWnd,timp,"TIMP",MB_OK);
 	verificare=0;
 		}
@@ -605,10 +609,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		vector_poz[contor_noduri].start_y=p1.y+10;
 		vector_poz[contor_noduri].id=contor_noduri+500;
 		
+		char a[10];
+		sprintf(a,"%d",contor_noduri);
+
 		if (p1.x<690 && p1.x>10 && p1.y>240 && p1.y<675)
 				{
 
-		HWND Grafic= CreateWindowEx( NULL,"button", "" ,
+		HWND Grafic= CreateWindowEx( NULL,"button", a ,
 				WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
 				p1.x,p1.y, 
 				20,20,
@@ -671,6 +678,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						130, 25,
 						hWnd, (HMENU) 6,
 						hInst, NULL );
+
+			hButton6 = CreateWindowEx( NULL,"button", "Validare Graf",
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
+						wndrect.left+10, wndrect.top+680, 
+						130, 25,
+						hWnd, (HMENU) 20,
+						hInst, NULL );
 		break;
 			case WM_COMMAND:
 				wmId    = LOWORD(wParam);
@@ -681,7 +695,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (id1==0)
 					id1=wmId;
 				else id2=wmId;
-				if (id1 && id2)
+				if (id1 && id2 && verificare_nod(id1) && verificare_nod(id2))
 				{
 					muchii_coordonate[contor_pozitii].buton1=id1;
 				    muchii_coordonate[contor_pozitii].buton2=id2;
@@ -696,7 +710,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				
 			// Parse the menu selections:
 				//hdc=GetDC(hWnd);
-				if (id1 && id2){
+				if (id1 && id2 && verificare_nod(id1) && verificare_nod(id2)){
 				id1=0;id2=0;
 				gMode=eDisplayLinie;
 				InvalidateRect(hWnd,NULL,TRUE);
@@ -704,8 +718,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			switch (wmId)
 			{
-			
-
+			    case 20:
+					validare_graf_func(hWnd);
+					break;
 				case 14:
 					prand_noduri(hWnd);   //functie ce creaza random nodurile si legaturile dintre ele intr-un graf orientat
 				break;
@@ -728,37 +743,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					gMode=eDisplayBUTTON;
 				break;
 				case 201:
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[1],mem_timp[1]);
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.50f \n",mem_flux[1],mem_timp[1]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 202:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[2],mem_timp[2]);
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.50f \n",mem_flux[2],mem_timp[2]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 203:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[3],mem_timp[3]);
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.50f \n",mem_flux[3],mem_timp[3]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 204:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[4],mem_timp[4]);
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.50f \n",mem_flux[4],mem_timp[4]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 205:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[5],mem_timp[5]);
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.50f \n",mem_flux[5],mem_timp[5]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
 					case 206:
 					//char mesaj[100];
-					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.16f \n",mem_flux[6],mem_timp[6]);
+					sprintf(mesaj," Fluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %.50f \n",mem_flux[6],mem_timp[6]);
 					MessageBox(hWnd,mesaj,"Informatii !",MB_OK);
 
 					break;
@@ -806,24 +821,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				Rectangle(hdc, 0, 0, 150,230);
 				////////////////////////////////////////////////////////
 				
-			//	hdc=GetDC(hWnd);
-			//	if(j<contor_pozitii){
-			//	MoveToEx( hdc,  vector_poz[muchii_coordonate[j].buton1-500].start_x,vector_poz[muchii_coordonate[j].buton1-500].start_y, NULL);
-			//		LineTo( hdc, vector_poz[muchii_coordonate[j].buton2-500].start_x, vector_poz[muchii_coordonate[j].buton2-500].start_y);
-			//	j++;
-			//	
-			//	
-			//	//UpdateWindow(hWnd);
-			////ReleaseDC(hWnd,hdc);
-			//	
-			//  }
-			//	else
-			//	{
-			//		j=0;
-			//	
-			//	}
-
-					//creare_graf_mod_grafic();
 			
 				
 				////////////////////////////////////////////////////////
@@ -1021,3 +1018,58 @@ void creare_graf_mod_grafic()
 
 
 
+int verificare_nod(int nod)
+{
+
+	for(int j=0;j<=contor_noduri;j++)
+		if (nod==vector_poz[j].id)
+			return 1;
+	 return 0;
+
+
+}
+
+void validare_graf_func(HWND hdlg)
+{
+	HDC hdc;
+	OPENFILENAME fon;
+	hdc=GetDC(hdlg);
+	ZeroMemory(&fon,sizeof(fon));
+	fon.lStructSize = sizeof(fon);
+	fon.hwndOwner = hdlg;
+	fon.lpstrFilter =TEXT("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+	fon.lpstrFile =szFileName;
+	fon.nMaxFile = MAX_PATH;
+	fon.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	fon.lpstrDefExt =TEXT("txt");
+	
+
+	
+
+
+
+	if(GetOpenFileName(&fon))
+	{
+
+			FILE*g=fopen(szFileName,"w");
+	fprintf(g," ");
+	fclose(g);
+
+	FILE*f=fopen(szFileName,"a");
+	fprintf(f,"%d %d\n",contor_noduri,contor_pozitii);
+
+	for (int j=0;j<contor_pozitii;j++)
+		fprintf(f,"%d %d %d \n",muchii_coordonate[j].buton1-500,muchii_coordonate[j].buton2-500,muchii_coordonate[j].capacitate);
+
+
+
+	fclose(f);
+	}
+
+
+
+
+
+
+
+}
