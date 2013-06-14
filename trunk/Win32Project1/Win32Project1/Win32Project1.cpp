@@ -37,8 +37,8 @@ int nod1,nod2,cap,legaturi[MAX_PATH][3],poz=0;
 float mem_timp[6];
 int cont_timp=1;
 int mem_flux[10];
-
-
+int alabala=0;
+int id1=0,id2=0,contor_pozitii=0;
 
 void Paint(HWND hwnd);
 
@@ -46,16 +46,26 @@ clock_t begin,end;
 int time_spent;
 float tmp;
 int contor_noduri=0;
+
 struct poz_buton{
 
-float up_x;
-float start_x;
-float up_y;
-float start_y;
+int up_x;
+int start_x;
+int up_y;
+int start_y;
 int id;
 };
 poz_buton vector_poz[500];
 
+struct muchie{
+
+	int buton1;
+	int buton2;
+	int capacitate;
+};
+
+
+muchie muchii_coordonate[500];
 
 enum EMode
 {
@@ -99,10 +109,38 @@ RECT		drawrect,wndrect;
 HDC			hDC;
 
 char matr_adiacenta[1000][1000],nr_matr=0;
-
+void creare_graf_mod_grafic();
 BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
 BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
 BOOL CALLBACK muchii(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
+BOOL CALLBACK capacitate_muchie(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam)
+{
+	int bState;
+	static int ok_cancel=TRUE; //stabileste dacă s-a închis cu OK sau
+	//Cancel
+	switch (message)
+	{
+		case WM_DESTROY:
+			EndDialog(hdlg,ok_cancel);
+		return TRUE;
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+				case IDOK: //S-a apăsat OK
+					//Functie care citeste un întreg dintr-o casetă	de text
+					muchii_coordonate[contor_pozitii].capacitate=(int)GetDlgItemInt(hdlg,IDC_EDIT1,&bState,true);
+					ok_cancel=TRUE;
+					//Functia care duce la încheierea dialogului
+					EndDialog(hdlg, true);
+				break;
+				
+			}
+			return TRUE;
+		}
+	return FALSE;
+}
+
+
 
 void Paint_Grafic(HWND hwnd);
 void prand_noduri(HWND hWnd)
@@ -117,6 +155,11 @@ void pCREARETASTATURA(HWND hWnd)
 {
 	DialogBoxParam(hInst, MAKEINTRESOURCE(IDCREARETASTATURA), hWnd,(DLGPROC)delatastatura, NULL);
 }
+void pcapacitate_muchie(HWND hWnd)
+{
+	DialogBoxParam(hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd,(DLGPROC)capacitate_muchie, NULL);
+}
+
 ///////////////////////////////////////////////functiile pentru flux
 void update(){
      int nod=n,min=100000;
@@ -451,7 +494,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPTSTR lpCmdLine,
 {
 	// TODO: Place code here.
 	MSG msg={};
-
+	
 	// Initialize global strings
 //	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_WIN32PROJECT1, szWindowClass, MAX_LOADSTRING);
@@ -536,7 +579,7 @@ void timp_edmonds_carp(HWND hWnd)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	
+	int id_buton;
 	//RECT  rect = { 110,110, 200, 200};
 	int wmId=0, wmEvent=0;
 	HWND hButton1=NULL,hButton2=NULL,hButton3=NULL,hButton4=NULL,hButton5=NULL,hButton6=NULL,hButton7=NULL;
@@ -554,15 +597,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				
 		p1.x=LOWORD(lParam);
 		p1.y=HIWORD(lParam);
+		
 		contor_noduri++;
-		
-		
-		
+		///////////////
+		 id_buton=contor_noduri+500;
+		///////////////////
 		vector_poz[contor_noduri].up_x=p1.x;
 		vector_poz[contor_noduri].up_y=p1.y;
 		vector_poz[contor_noduri].start_x=p1.x+20;
 		vector_poz[contor_noduri].start_y=p1.y+10;
-		vector_poz[contor_noduri].id=contor_noduri;
+		vector_poz[contor_noduri].id=contor_noduri+500;
+		
 		if (p1.x<690 && p1.x>10 && p1.y>240 && p1.y<675)
 				{
 
@@ -570,14 +615,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
 				p1.x,p1.y, 
 				20,20,
-				hWnd,(HMENU) 50+contor_noduri,
+				hWnd,(HMENU)id_buton,
 				hInst, NULL );
 		hdc=GetDC(hWnd); //Obtinerea contextului grafic
 	//	Ellipse(hdc,p2.x-8,p2.y-8,p2.x+8,p2.y+8);
 	//	MoveToEx(hdc,p2.x,p2.y,NULL);
 	//	LineTo(hdc,p1.x,p1.y);
 		
-		p2=p1;
+		//p2=p1;
 		ReleaseDC(hWnd,hdc); }//Eliberarea contextului grafic
 		return 0;
 		
@@ -635,12 +680,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			case WM_COMMAND:
 				wmId    = LOWORD(wParam);
 				wmEvent = HIWORD(wParam);
-			char a[10];
-			sprintf(a,"%d",wmId);
-			MessageBox(hWnd,a,"s",MB_OK);
+				
+			
+
+				if (id1==0)
+					id1=wmId;
+				else id2=wmId;
+
+				
+			
+				if (id1 && id2)
+				{
+					muchii_coordonate[contor_pozitii].buton1=id1;
+				    muchii_coordonate[contor_pozitii].buton2=id2;
+					pcapacitate_muchie(hWnd);
+					
+					contor_pozitii++;
+					
+				}
+				
+			/*char a[200];
+					sprintf(a,"id1=%d  \n id2=%d  ",muchii_coordonate[contor_pozitii].buton1,vector_poz[muchii_coordonate[contor_pozitii].buton1-500].start_x);
+			MessageBox(hWnd,a,"s",MB_OK);*/
+				
 			// Parse the menu selections:
+				//hdc=GetDC(hWnd);
+				if (id1 && id2){
+				creare_graf_mod_grafic();
+				id1=0;id2=0;}
+
 			switch (wmId)
 			{
+			
+
 				case 14:
 					prand_noduri(hWnd);   //functie ce creaza random nodurile si legaturile dintre ele intr-un graf orientat
 				break;
@@ -741,8 +813,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				 SelectObject(hdc, brLogBrush);
 				Rectangle(hdc, 0, 0, 150,230);
 				////////////////////////////////////////////////////////
+				
+			//	hdc=GetDC(hWnd);
+			//	if(alabala<contor_pozitii){
+			//	MoveToEx( hdc,  vector_poz[muchii_coordonate[alabala].buton1-500].start_x,vector_poz[muchii_coordonate[alabala].buton1-500].start_y, NULL);
+			//		LineTo( hdc, vector_poz[muchii_coordonate[alabala].buton2-500].start_x, vector_poz[muchii_coordonate[alabala].buton2-500].start_y);
+			//	alabala++;
+			//	
+			//	
+			//	//UpdateWindow(hWnd);
+			////ReleaseDC(hWnd,hdc);
+			//	
+			//  }
+			//	else
+			//	{
+			//		alabala=0;
+			//	
+			//	}
+
+					//creare_graf_mod_grafic();
+			
+				
+				////////////////////////////////////////////////////////
 				DeleteObject(brLogBrush);
 				desenare(hdc);
+				
 				EndPaint(hWnd,&ps);
 				
 				
@@ -750,6 +845,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 		case WM_ACTIVATE:
 			Paint(hWnd);
+			
 		break;
 		case WM_DESTROY:
 				PostQuitMessage(0);
@@ -915,3 +1011,38 @@ void DisplayText(HDC hdc)
 	
 	
 }
+
+void creare_graf_mod_grafic()
+{
+	PAINTSTRUCT ps;
+	HDC hdc;HPEN pen;
+	
+
+		
+			 // hdc=BeginPaint(hWnd,&ps);
+			  hdc=GetDC(hWnd);
+			  pen = CreatePen(PS_SOLID,2,RGB(0,0,255));
+			  SelectObject(hdc,pen);
+			/*for (int j=0;j<contor_pozitii;j++)
+			{
+				
+			}*/
+			  if(alabala<contor_pozitii){
+				MoveToEx( hdc,  vector_poz[muchii_coordonate[alabala].buton1-500].start_x,vector_poz[muchii_coordonate[alabala].buton1-500].start_y, NULL);
+					LineTo( hdc, vector_poz[muchii_coordonate[alabala].buton2-500].start_x, vector_poz[muchii_coordonate[alabala].buton2-500].start_y);
+				alabala++;
+			  }
+				else
+				{
+					alabala=0;
+				
+				}
+				
+			//EndPaint(hWnd,&ps);
+			
+			
+		
+}
+
+
+
