@@ -10,11 +10,11 @@
 #else
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
-
+#pragma warning(disable:4996)
 #define icon
+#define mystyle  *_*_*_* 
 
 
-#define _CRT_SECURE_NO_DEPRECATE
 //inceputul codului
 #include<conio.h>
 #include <comdef.h>
@@ -28,7 +28,8 @@
 #include<time.h>
 #include<fstream>
 #include<cstring>
-
+#define _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
 //////////////Functii de masurare tim de executie algoritm
 double PCFreq = 0.0;
 __int64 CounterStart = 0;
@@ -144,7 +145,8 @@ int verificare_nod(int nod);
 char matr_adiacenta[1000][1000],nr_matr=0;
 void creare_graf_mod_grafic();
 void validare_graf_func(HWND hdlg);
-
+int verificare_input(int input,HWND hWnd);
+int verificare_input_nod(int input,HWND hWnd);
 void demo(HWND hdlg);
 BOOL CALLBACK nrnoduri(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
 BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam);
@@ -299,6 +301,12 @@ void Edmonds_Karp(HWND hdlg)
 //functie de crearea aleatoare a matrici de vecini impreuna cu capacitatile lor
 void rand_list(HWND hdlg)
 {
+	int bState;
+	int nr_noduri1=(int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
+	if (nr_noduri1>401)
+	{MessageBox(hWnd," Valoare introdusa este pre mare ! \n Va rugam sa introduce-ti o valoare intre 1<=>400!","Atentie!",MB_OK | MB_ICONERROR); goto fin;}
+	else{
+	
 	int rand_cap[401][401];
 	HDC hdc;
 	OPENFILENAME fon;
@@ -315,9 +323,9 @@ void rand_list(HWND hdlg)
 	{
 	 FILE*in=fopen(szFileName,"w");
 	fprintf(in," ");
-	int bState;
 	
-	int nr_noduri1=(int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
+	
+
 	
 	
 	 int nr_muchii=0;
@@ -335,7 +343,10 @@ void rand_list(HWND hdlg)
 	               if(q1>q)   
 					 fprintf(in,"%d %d %d \n",q,q1,rand_cap[q][q1]);
 	fclose(in);
+	}
+	fin:;
     }
+	
 }
 //functie creare graf de la tastatura
 void creare_de_la_tast(HWND hdlg)
@@ -343,8 +354,16 @@ void creare_de_la_tast(HWND hdlg)
 	int bState;
 	
 	nod1= (int)GetDlgItemInt(hdlg,IDC_EDIT1,&bState,true);
+	if(verificare_input_nod(nod1,hdlg))
+		nod1=0;
 	nod2= (int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
+	if(verificare_input_nod(nod2,hdlg))
+		nod2=0;
 	 cap=(int)GetDlgItemInt(hdlg,IDC_EDIT3,&bState,true);
+	 if (cap<0)
+		{ MessageBox(hWnd," Capacitatea introdusa este pre mica ! \n Va rugam sa introduce-ti o valoare mai mare decat 0!","Atentie!",MB_OK | MB_ICONERROR);
+	 cap=0;
+	 }
 	///scanf("%d %d %d",&nod1,&nod2,&cap);
 	//fprintf(in," %d %d %d \n",nod1,nod2,cap);
 	//printf("doresti sa mai adaugi legaturi?\n 1->NU 0->DA");
@@ -498,10 +517,20 @@ BOOL CALLBACK delatastatura(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam
 				break;
 				case IDC_BUTTON2:
 					nod_dest=(int)GetDlgItemInt(hdlg,IDC_EDIT2,&bState,true);
+					if (verificare_input(nod_dest,hWnd))
+						nod_dest=0;
 				break;
 				case IDC_BUTTON3:
 					 nr_noduri=(int)GetDlgItemInt(hdlg,IDC_EDIT3,&bState,true);
+					 if(verificare_input(nr_noduri,hWnd))
+						   nr_noduri=0;
+
+
 				break;
+
+				//case IDC_BUTTON1:
+					//DialogBox(hInst, MAKEINTRESOURCE(IDD_HELPADAUGAREMUCHII), hWnd, About); 
+				//	break;
 				case IDOK: //S-a apăsat OK
 					//Functie care citeste un întreg dintr-o casetă de text
 					//creare_de_la_tast();
@@ -705,7 +734,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						hWnd, (HMENU) 9,
 						hInst, NULL );
 	
-			hButton5 = CreateWindowEx(NULL, "button", "Help!",
+			hButton5 = CreateWindowEx(NULL, "button", "Info!",
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
 						wndrect.left+10, wndrect.top+100, 
 						130, 25,
@@ -731,10 +760,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						130, 25,		
 						hWnd, (HMENU) 20,		
 						hInst, NULL );
-			hButton9 = CreateWindowEx( NULL,"button", "Reinitializare",		
+			hButton9 = CreateWindowEx( NULL,"button", "Reinitializare Suprafata",		
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,		
 							wndrect.left+250, wndrect.top+680,		
-						130, 25,		
+						160, 25,		
 						hWnd, (HMENU) 44,		
 						hInst, NULL );
 			hButton10 = CreateWindowEx( NULL,"button", "Demonstratie",		
@@ -743,6 +772,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						130, 25,		
 						hWnd, (HMENU) 10,		
 						hInst, NULL );
+			hButton10 = CreateWindowEx( NULL,"button", "?",		
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,		
+							wndrect.left+140,wndrect.top+ 10,		
+						20, 25,		
+						hWnd, (HMENU) 11,		
+						hInst, NULL );
+			hButton10 = CreateWindowEx( NULL,"button", "?",		
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,		
+							wndrect.left+140, wndrect.top+40,		
+						20, 25,		
+						hWnd, (HMENU) 12,		
+						hInst, NULL );
+
+			hButton10 = CreateWindowEx( NULL,"button", "?",		
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,		
+							wndrect.left+140, wndrect.top+70,		
+						20, 25,		
+						hWnd, (HMENU) 13,		
+						hInst, NULL );
+
+			hButton10 = CreateWindowEx( NULL,"button", "?",		
+						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,		
+							wndrect.left+140, wndrect.top+130,		
+						20, 25,		
+						hWnd, (HMENU) 15,		
+						hInst, NULL );
+
 		break;
 			case WM_COMMAND:
 				wmId    = LOWORD(wParam);
@@ -763,20 +819,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if(verificare_nod(id2)==0)
 					id2=0;
 		
-			/*char a[200];		
-					sprintf(a,"id1=%d  \n id2=%d  ",muchii_coordonate[contor_pozitii].buton1,vector_poz[muchii_coordonate[contor_pozitii].buton1-500].start_x);		
-				MessageBox(hWnd,a,"s",MB_OK);*/
-			// Parse the menu selections:
-				//hdc=GetDC(hWnd);		
+					
 			if (id1 && id2 && verificare_nod(id1) && verificare_nod(id2)){		
-				id1=0;id2=0;		
-				//gMode=eDisplayLinie;		
+				id1=0;id2=0;			
 				InvalidateRect(hWnd,NULL,TRUE);		
 				}
 			switch (wmId)
 			{
 			case 44:
 				reinitializare_matrice();
+				break;
+
+		     	case 15:
+					    DialogBox(hInst, MAKEINTRESOURCE(IDD_RANDOM), hWnd, About); 
 				break;
 				case 20:	
 
@@ -809,6 +864,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				case 25:
 					gMode=eDisplayBUTTON;
 				break;
+
+				case 11:
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_HELPSTART), hWnd, About); 
+					break;
+
+					case 12:
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_HELPCREARE), hWnd, About); 
+					break;
+
+					case 13:
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_HELPREINITIALIZARE), hWnd, About); 
+					break;
+
 				case 201:
 					
 					sprintf(mesaj," Numarul de noduri este %d .\nFluxul maxim din graf este de %d.\n Timpul de executie al algoritmului este de %f \n",mem_noduri[1],mem_flux[1],mem_timp[1]);
@@ -876,7 +944,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				//////////////////////////////////////////////////////cadran III
 				LogBrush.lbStyle = BS_HATCHED;
 				LogBrush.lbColor = RGB(220,220,220);
-				LogBrush.lbHatch =	HS_HORIZONTAL;
+				LogBrush.lbHatch =	HS_CROSS;
 				brLogBrush = CreateBrushIndirect(&LogBrush);
 			    SelectObject(hdc, brLogBrush);
 				Rectangle(hdc, 700, 0, 1370,750);
@@ -884,10 +952,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				////////////////////////////////////////////////////
 				LogBrush.lbStyle = BS_HATCHED;
 				LogBrush.lbColor = RGB(255, 0, 255);
-				LogBrush.lbHatch = HS_DIAGCROSS;
+				LogBrush.lbHatch = HS_CROSS;
 				brLogBrush = CreateBrushIndirect(&LogBrush);
 				 SelectObject(hdc, brLogBrush);
-				Rectangle(hdc, 0, 0, 150,230);
+				Rectangle(hdc, 0, 0, 180,230);
 				////////////////////////////////////////////////////////
 				DeleteObject(brLogBrush);
 				desenare(hdc);
@@ -966,7 +1034,7 @@ void Paint_Grafic(HWND hwnd)
 	for(int q=1;q<=cont_timp;q++)
 			DestroyWindow(Grafic[q]);
 	for(int kkk=1;kkk<cont_timp;kkk++)
-	{	sprintf(nume,"Bar %d",kkk);
+	{	sprintf(nume,"Test %d",kkk);
 		Grafic[kkk]= CreateWindowEx( NULL,"button", nume ,
 						WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON ,
 						701,(kkk-1)*100+5,//701,(kkk-1)*100+5, 
@@ -1029,36 +1097,40 @@ void DisplayText(HDC hdc)
 {
 	char buf[2048];
 
-	int x=180;
-	int y=60;
+	int x=190;
+	int y=10;
 
-	int len=sprintf(buf,"Hello World!");
+	int len=sprintf(buf," Edmonds-Karp Test Software ");
 	TextOut(hdc,x,y,buf,len);
 
 	y+=50;
-	len=sprintf(buf,"The above test was displayed using the GDI function: TextOut");
+	len=sprintf(buf,"Aceasta aplicatie a fost dezvoltata ");
 	TextOut(hdc,x,y,buf,len);
 
 	y+=20;
-	len=sprintf(buf,"The code is TextOut(hdc,50,50,""Hello World"",12)");
+	len=sprintf(buf,"cu scopul testari algoritmului Edmonds-Karp !");
 	TextOut(hdc,x,y,buf,len);
 
-	SetTextColor(hdc,RGB(rand()%255,rand()%255,rand()%255));
-
 	y+=20;
-	len=sprintf(buf,"You can also change the colour of the text");
+	len=sprintf(buf,"In cazul in care intampinati probleme, folositi Help-ul aplicatiei!");
 	TextOut(hdc,x,y,buf,len);
 
-	SetTextColor(hdc,RGB(0,0,255));
+//	SetTextColor(hdc,RGB(rand()%255,rand()%255,rand()%255));
 
 	y+=20;
-	len=sprintf(buf,"Using the SetTextColour function");
+	len=sprintf(buf,"");
 	TextOut(hdc,x,y,buf,len);
 
-	SetTextColor(hdc,RGB(0,0,0));
+	//SetTextColor(hdc,RGB(0,0,255));
 
 	y+=20;
-	len=sprintf(buf,"MARIUS Sava & MIHAI Florea");
+	len=sprintf(buf,"");
+	TextOut(hdc,x,y,buf,len);
+
+//	SetTextColor(hdc,RGB(0,0,0));
+
+	y+=20;
+	len=sprintf(buf,"");
 	TextOut(hdc,x,y,buf,len);
 	
 	
@@ -1071,10 +1143,16 @@ void creare_graf_mod_grafic()
 			  pen = CreatePen(PS_SOLID,2,RGB(0,0,255));		
 				  SelectObject(hdc,pen);		
 				for (int j=0;j<contor_pozitii;j++)		
-				{		
+				{		int x_text,y_text,len; 
+						char capacitate[10];
+
 					MoveToEx( hdc,  vector_poz[muchii_coordonate[j].buton1-500].start_x,vector_poz[muchii_coordonate[j].buton1-500].start_y, NULL);		
 						LineTo( hdc, vector_poz[muchii_coordonate[j].buton2-500].start_x, vector_poz[muchii_coordonate[j].buton2-500].start_y);		
 			
+						x_text=((vector_poz[muchii_coordonate[j].buton2-500].start_x-vector_poz[muchii_coordonate[j].buton1-500].start_x)/2)+vector_poz[muchii_coordonate[j].buton1-500].start_x;
+						y_text=((vector_poz[muchii_coordonate[j].buton2-500].start_y-vector_poz[muchii_coordonate[j].buton1-500].start_y)/2)+vector_poz[muchii_coordonate[j].buton1-500].start_y-10;
+						len=sprintf(capacitate,"%d",muchii_coordonate[j].capacitate);
+						TextOut(hdc,x_text,y_text,capacitate,strlen(capacitate));
 		}		
 
 }
@@ -1089,7 +1167,7 @@ int verificare_nod(int nod)
 		
 	}		
 		
-	void validare_graf_func(HWND hdlg)		
+void validare_graf_func(HWND hdlg)		
 	{		
 		HDC hdc;		
 	OPENFILENAME fon;		
@@ -1272,6 +1350,21 @@ void demo(HWND hdlg)
     }
 }
 
+int verificare_input(int input,HWND hWnd)
+{
+
+	if (input>400 || input <0)
+	{MessageBox(hWnd," Valoare introdusa nu este corecta ! \n Va rugam sa introduce-ti o valoare intre 0<=>400!","Atentie!",MB_OK | MB_ICONERROR);return 1;}
+
+	return 0;
+}
 
 
+int verificare_input_nod(int input,HWND hWnd)
+{
 
+	if (input>400 || input <2)
+	{MessageBox(hWnd," Valoare introdusa nu este corecta ! \n Va rugam sa introduce-ti o valoare intre 2<=>400!","Atentie!",MB_OK | MB_ICONERROR);return 1;}
+
+	return 0;
+}
