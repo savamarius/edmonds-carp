@@ -479,6 +479,10 @@ BOOL CALLBACK muchii(HWND hdlg, UINT message, WPARAM wParam,LPARAM lParam)
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{
+
+				case IDC_BUTTON1:
+					DialogBox(hInst, MAKEINTRESOURCE(IDD_HELPADAUGAREMUCHII), hWnd, About); 
+					break;
 				case IDOK: //S-a apăsat OK
 					//Functie care citeste un întreg dintr-o casetă	de text
 					creare_de_la_tast(hdlg);
@@ -1359,7 +1363,6 @@ int verificare_input(int input,HWND hWnd)
 	return 0;
 }
 
-
 int verificare_input_nod(int input,HWND hWnd)
 {
 
@@ -1368,3 +1371,6 @@ int verificare_input_nod(int input,HWND hWnd)
 
 	return 0;
 }
+
+
+
