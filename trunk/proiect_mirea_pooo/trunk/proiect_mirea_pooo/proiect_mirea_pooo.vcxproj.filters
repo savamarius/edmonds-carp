@@ -23,5 +23,11 @@
     <ClInclude Include="Meniu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scan_System.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StringClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

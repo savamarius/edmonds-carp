@@ -1,5 +1,7 @@
 #pragma once
 //#include<iostream>
+#include"Scan_System.h"
+
 
 class Meniu
 {
